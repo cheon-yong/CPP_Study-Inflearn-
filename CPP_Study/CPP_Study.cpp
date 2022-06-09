@@ -47,6 +47,36 @@ int d;
 // 그냥 컴파일러 (VS) 마음이라는 것
 const char* msg = "Hello World";
 
+
+// 유의 사항
+// 1) 변수의 유효범위
+
+// 전역변수
+// int hp = 10;
+
+// 스택
+// { } 중괄호의 범위가 생존 범위
+// 같은 이름을 두번 사용할 때 문제
+
+// 2) 연산 우선 순위
+
+// 3) 타입 변환
+int hp = 100;
+
+short hp2 = hp; // 윗쪽 비트 데이터가 짤린 상태로 저장
+float hp3 = hp; // 실수로 변환할 때 정밀도 차이가 있기 때문에 데이터 손실
+unsigned int hp4 = hp; // -1이라면... 42억? 비트 단위로 보면 똑같지만 분석하는 방법이 달라짐
+
+// 곱셈
+// - 오버플로우
+// int * int = int
+// 나눗셈
+// - 0으로 나누지 않게 조심
+// - 실수 관련
+// ex) int maxHp = 1000;
+// int / int = int
+// 즉 int / float 또는 float / int
+
 int main()
 {
 #pragma region 산술 연산
@@ -181,5 +211,4 @@ int main()
 	bool mask = (1 << INVINCIBLE) | (1 << STUN);
 	bool stunOrInvincible = ((flag & 0b1010) != 0);
 #pragma endregion
-	
 }
