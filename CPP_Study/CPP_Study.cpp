@@ -1,15 +1,35 @@
 ﻿#include <iostream>
 using namespace std;
 
+// 상수지만 너무 따로 노는 느낌
+// 하나의 세트로 묶는다면?
+const int SCISSORS = 1;
+const int ROCK = 2;
+const int PAPER = 3;
+
+// 숫자를 지정 안하면 첫 값은 0부터 시작
+// 그 다음 값들은 이전 값 + 1
+enum ENUM_SRP
+{
+	ENUM_SCISSORS = 1,
+	ENUM_ROCK,
+	ENUM_PAPER
+};
+
+// #이 붙은 것 -> 전처리 지시문
+// #include <iostream>이라는 파일을 찾아서 해당 내용을 복붙
+// 1) 전처리 2) 컴파일 3) 링크
+#define DEFINE_SCISSORS 1
+#define DEFINE_TEST cout << "Hello World" << endl;
+
 int main()
 {
+	DEFINE_TEST;
+
 	srand(time(0)); // 시드 설정
 
 	// 1 2 3
 	
-	const int SCISSORS = 1;
-	const int ROCK = 2;
-	const int PAPER = 3;
 
 	int wins = 0;
 	int total = 0;
@@ -36,7 +56,7 @@ int main()
 		int input;
 		cin >> input;
 
-		if (input == SCISSORS)
+		if (input == ENUM_SCISSORS)
 		{
 			switch (computerValue)
 			{
@@ -54,7 +74,7 @@ int main()
 				break;
 			}
 		}
-		else if (input == ROCK)
+		else if (input == ENUM_ROCK)
 		{
 			switch (computerValue)
 			{
@@ -72,7 +92,7 @@ int main()
 				break;
 			}
 		}
-		else if (input == PAPER)
+		else if (input == ENUM_PAPER)
 		{
 			switch (computerValue)
 			{
