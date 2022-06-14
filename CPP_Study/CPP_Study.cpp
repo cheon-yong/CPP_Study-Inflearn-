@@ -1,38 +1,36 @@
 ﻿#include <iostream>
 using namespace std;
 
-// 오늘의 주제 : 지역 변수와 값 전달
+// 오늘의 주제 : 호출 스택
 
-// 전역 변수
-// 참고) 초기화 여부, const 등, .bss .data .rodata
-int globalValue = 0;
+// 함수 선언
 
-void Test()
+void Func1();
+void Func2(int hp, int mp);
+void Func3(float a);
+
+void Func1()
 {
-	cout << "전역 변수의 값은 : " << globalValue << endl;
-	globalValue++;
+	cout << "Func1" << endl;
+
+	Func2(1, 2);
 }
 
-int IncreaseHp(int hp)
+void Func2(int a, int b)
 {
-	int finalHp = hp + 1;
-	return finalHp;
+	cout << "Func2" << endl;
+
+	Func3(10);
+}
+
+void Func3(float a)
+{
+	cout << "Func3" << endl;
 }
 
 int main()
 {
-	cout << "전역 변수의 값은 : " << globalValue << endl;
-	globalValue++;
-
-	Test();
-
-	// 지역변수
-	int localValue = 0;
-
-	int hp = 1;
-	cout << "Increase 호출 전 : " << hp << endl;
-	hp = IncreaseHp(hp);
-	cout << "Increase 호출 후 : " << hp << endl;
-
+	cout << "main" << endl;
+	Func1();
 	return 0;
 }
