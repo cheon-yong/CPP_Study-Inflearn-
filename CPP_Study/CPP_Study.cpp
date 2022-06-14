@@ -1,209 +1,43 @@
 ﻿#include <iostream>
 using namespace std;
 
-// 오늘의 주제 : TextRPG
-enum PlayerType
-{
-	PT_Knight = 1,
-	PT_Archer,
-	PT_Mage
-};
-
-enum MonsterType
-{
-	MT_Slime = 1,
-	MT_Orc,
-	MT_Skeleton
-};
-
-struct ObjectInfo
-{
-	int type;
-	int hp;
-	int attack;
-	int defence;
-};
-
-ObjectInfo playerInfo;
-ObjectInfo monsterInfo;
-
-void EnterLobby();
-void SelectPlayer();
-void EnterField();
-void CreateRandomMonster();
-void EnterBattle();
+// 오늘의 주제 : 포인터
 
 int main()
 {
-	srand(time(0));
-	EnterLobby();
+	// 지금까지 사용한 방식
+	// number라는 이름의 4바이트 정수 타입의 바구니를 만든다
+	// number라는 변수 스택 메모리에 할당
+	// number = 1 라 함은, number 바구니에 1이라는 숫자를 넣으라는 의미,
+	// 따라서 스택 메모리에 있는 특정 주소(number 바구니)에 우리가 원하는 값을 넣은 셈
+	// number는 비유하자면 메모리에 이름을 붙인 것 (찰떡같이 알아들어서)
+	// 나쁘지 않고 편리하지만, 단점은 TextRPG 원본수정
+	int number = 1;
+
+	// TYPE* 변수이름;
+	// 일단 2가지 요소
+	// - TYPE
+	// - *
+
+	// 바구니는 바구니인데..
+	// [주소를 저장하는 바구니다!]
+	// 변수 선언할 때 * 등장했다 -> 포인터 = 주소
+	// 참고) 포인터라는 바구니는 4바이트(32비트) or 8바이트(64비트) 고정 크기
+	
+	int* ptr = &number;
+
+	// 근데 남의 주소를 가지고 뭘하지
+	// 추가 문법 : [주소를 저장하는 바구니]가 가리키는 주소로 가서 무엇인가를 해라
+	// *변수이름 = 값;
+	
+	// 포탈을 타고 순간이동한다고 가정
+	// *이 여러번 등장하니 헷갈리는데, 사용 시점에 따라서 구분해서 기억
+	// - 변수 선언(주소를 저장하는 바구니)
+	// - 사용할 때(포탈을 타고 순간이동)
+	int value = *ptr;
+	*ptr = 2;
+
+	cout << "value : " << value;
 
 	return 0;
-}
-
-void EnterLobby()
-{
-	while (true)
-	{
-		cout << "---------------------" << endl;
-		cout << "로비에 입장했습니다.!" << endl;
-		cout << "---------------------" << endl;
-
-		// 플레이어 직업 선택
-		SelectPlayer();
-
-		//
-		cout << "---------------------" << endl;
-		cout << "(1) 필드 입장 (2) 게임 종료" << endl;
-		cout << "---------------------" << endl;
-
-		int input;
-		cin >> input;
-		if (input == 1)
-		{
-			EnterField();
-		}
-		else
-		{
-			return;
-		}
-
-	}
-}
-
-void SelectPlayer()
-{
-	while (true)
-	{
-		cout << "---------------------" << endl;
-		cout << "직업을 골라주세요!!" << endl;
-		cout << "(1) 기사 (2) 궁수 (3) 마법사" << endl;
-		cout << "---------------------" << endl;
-		cout << "> ";
-
-		cin >> playerInfo.type;
-		if (playerInfo.type == PT_Knight)
-		{
-			cout << "기사 생성중...!" << endl;
-			playerInfo.hp = 150;
-			playerInfo.attack = 10;
-			playerInfo.defence = 5;
-			break;
-		}
-		else if (playerInfo.type == PT_Archer)
-		{
-			cout << "궁수 생성중...!" << endl;
-			playerInfo.hp = 100;
-			playerInfo.attack = 15;
-			playerInfo.defence = 3;
-			break;
-		}
-		else if (playerInfo.type == PT_Mage)
-		{
-			cout << "마법사 생성중...!" << endl;
-			playerInfo.hp = 80;
-			playerInfo.attack = 25;
-			playerInfo.defence = 0;
-			break;
-		}
-	}
-}
-
-void EnterField()
-{
-	while (true)
-	{
-		cout << "---------------------" << endl;
-		cout << "필드에 입장했습니다.!" << endl;
-		cout << "---------------------" << endl;
-
-
-		cout << "[PLAYER] HP : " << playerInfo.hp << " / ATT : " << playerInfo.attack << " / DEF : " << playerInfo.defence << endl;
-
-		CreateRandomMonster();
-
-
-		cout << "---------------------" << endl;
-		cout << "(1) 전투 (2) 도주" << endl;
-		cout << "---------------------" << endl;
-
-		int input;
-		cin >> input;
-
-		if (input == 1)
-		{
-			EnterBattle();
-			if (playerInfo.hp == 0)
-				return;
-		}
-		else
-		{
-			return;
-		}
-	}
-}
-
-void CreateRandomMonster()
-{
-	// 1 ~ 3
-	monsterInfo.type = (rand() % 3) + 1;
-
-	switch (monsterInfo.type)
-	{
-	case MT_Slime:
-		cout << "슬라임 생성중 ...! (HP:15 / ATT:5 / DEF:0)" << endl;
-		monsterInfo.hp = 15;
-		monsterInfo.attack = 5;
-		monsterInfo.defence = 0;
-		break;
-	case MT_Orc:
-		cout << "오크 생성중 ...! (HP:40 / ATT:10 / DEF:3)" << endl;
-		monsterInfo.hp = 40;
-		monsterInfo.attack = 10;
-		monsterInfo.defence = 3;
-		break;
-	case MT_Skeleton:
-		cout << "스켈레톤 생성중 ...! (HP:80 / ATT:15 / DEF:5)" << endl;
-		monsterInfo.hp = 80;
-		monsterInfo.attack = 15;
-		monsterInfo.defence = 5;
-		break;
-	}
-}
-
-void EnterBattle()
-{
-	while (true)
-	{
-		int damage = playerInfo.attack - monsterInfo.defence;
-		if (damage < 0)
-			damage = 0;
-
-		monsterInfo.hp -= damage;
-		if (monsterInfo.hp < 0)
-			monsterInfo.hp = 0;
-
-		cout << "몬스터 남은 체력 : " << monsterInfo.hp << endl;
-		if (monsterInfo.hp == 0)
-		{
-			cout << "몬스터를 처치했습니다!" << endl;
-			return;
-		}
-
-		damage = monsterInfo.attack - playerInfo.defence;
-		if (damage < 0)
-			damage = 0;
-
-		// 반격
-		playerInfo.hp -= damage;
-		if (playerInfo.hp < 0)
-			playerInfo.hp = 0;
-
-		cout << "플레이어 남은 체력 : " << playerInfo.hp << endl;
-		if (playerInfo.hp == 0)
-		{
-			cout << "당신은 사망했습니다... GameOver" << endl;
-			return;
-		}
-	}
 }
