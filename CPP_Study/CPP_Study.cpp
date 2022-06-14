@@ -1,36 +1,49 @@
 ﻿#include <iostream>
 using namespace std;
 
-// 오늘의 주제 : 호출 스택
+// 오늘의 주제 : 함수 마무리
 
-// 함수 선언
+// 오버로딩 (중복 정의 : 함수 이름의 재사용)
+// - 매개변수 수가 다르거나
+// - 매개변수 타입이 다르거나 (순서가 다른 것 포함)
 
-void Func1();
-void Func2(int hp, int mp);
-void Func3(float a);
-
-void Func1()
+int Add(int a, int b)
 {
-	cout << "Func1" << endl;
-
-	Func2(1, 2);
+	int result = a + b;
+	return result;
 }
 
-void Func2(int a, int b)
+int Add(int a)
 {
-	cout << "Func2" << endl;
-
-	Func3(10);
+	int result = a + 1;
+	return result;
 }
 
-void Func3(float a)
+float Add(float a, float b)
 {
-	cout << "Func3" << endl;
+	float result = a + b;
+	return result;
+}
+
+// 기본 인자값
+void SetPlayerInfo(int hp, int mp, int attack, int guildId = 0, int castleId = 0)
+{
+
+}
+
+// 스택 오버플로우
+int Factorial(int n)
+{
+	if (n <= 1)
+		return 1;
+
+	return n * Factorial(n - 1);
 }
 
 int main()
 {
-	cout << "main" << endl;
-	Func1();
+	SetPlayerInfo(100, 40, 10);
+
+	cout << Factorial(5) << endl;
 	return 0;
 }
