@@ -1,57 +1,38 @@
 ﻿#include <iostream>
 using namespace std;
 
-// 오늘의 주제 : 함수 (프로시저, 메소드, 루틴)
-/*
-input 으로 무엇을 받고, output으로 무엇을 뱉을지 정해준다
+// 오늘의 주제 : 지역 변수와 값 전달
 
-반환타입 함수이름 ([인자타입 매개변수])
+// 전역 변수
+// 참고) 초기화 여부, const 등, .bss .data .rodata
+int globalValue = 0;
+
+void Test()
 {
-함수 내용
-
-return ~~~;
-}
-*/
-
-// Hello World를 콘솔에 출력하는 함수를 만들어보자!
-// input : 없음 / output: 없음
-// 타입 : int float double char~~
-
-void PrintHelloWorld()
-{
-	cout << "Hello World" << endl;
+	cout << "전역 변수의 값은 : " << globalValue << endl;
+	globalValue++;
 }
 
-// 정수를 입력(함수) 받아서, 콘솔에 출력하는 함수를 만들어보자
-// input : int / output : 없음
-
-void PrintNumber(int number)
+int IncreaseHp(int hp)
 {
-	cout << "넘겨주신 숫자는 " << number << "입니다." << endl;
-}
-
-// 2를 곱하고 결과물을 뱉는 함수를 만들어보자
-// input : int / output : int
-
-int MultiplyBy2(int a)
-{
-	int result = a * 2;
-	return result;
-}
-
-// 두 숫자를 곱해서 결과물을 뱉는 함수를 만들어보자
-// input : int, int / output int
-
-int MultiplyBy(int a, int b)
-{
-	return a * b;
+	int finalHp = hp + 1;
+	return finalHp;
 }
 
 int main()
 {
-	PrintNumber(2);
-	PrintHelloWorld();
+	cout << "전역 변수의 값은 : " << globalValue << endl;
+	globalValue++;
 
-	int result = MultiplyBy(3, 5);
-	PrintNumber(result);
+	Test();
+
+	// 지역변수
+	int localValue = 0;
+
+	int hp = 1;
+	cout << "Increase 호출 전 : " << hp << endl;
+	hp = IncreaseHp(hp);
+	cout << "Increase 호출 후 : " << hp << endl;
+
+	return 0;
 }
