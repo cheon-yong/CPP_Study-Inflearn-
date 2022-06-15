@@ -1,54 +1,68 @@
 ﻿#include <iostream>
 using namespace std;
 
-// 오늘의 주제 : 포인터 vs 배열
+// 오늘의 주제 : 로또 번호 생성기
 
-void Test(int a)
+// 1) Swap 만들기
+void Swap(int* a, int* b)
 {
-	a++;
+	int temp = *a;
+	*a = *b;
+	*b = temp;
 }
 
-// 배열은 함수 인자로 넘기면, 컴파일러가 알아서  포인터로 치환한다 (char[] -> char*)
-// 배열 내용 전체를 넘긴 것이 아니라 주소를 넘김
-void Test(char a[])
+
+// 2) Sort 만들기
+void Sort(int numbers[],int count)
 {
-	a[0] = 'x';
+	for (int i = 0; i < count; i++)
+	{
+		for (int j = i; j < count; j++)
+		{
+			if (numbers[i] > numbers[j])
+				Swap(&numbers[i], &numbers[j]);
+		}
+	}
 }
 
+// 3) 로또 번호 생성
+void ChooseLotoo(int numbers[])
+{
+	// TODO : 랜덤으로 1 ~ 45 사이의 숫자 6개를 골라주세요!
+	int madeNumber = 0;
+	while (madeNumber < 6)
+	{
+		int num = (rand() % 45) + 1;
+
+		bool isExist = false;
+		for (int i = 0; i < madeNumber; i++)
+		{
+			if (numbers[i] == num)
+			{
+				isExist = true;
+				break;
+			}
+		}
+
+		if (isExist)
+			continue;
+
+		numbers[madeNumber] = num;
+		madeNumber++;
+	}
+
+	Sort(numbers, 6);
+}
 int main()
 {
-	// 문자열 = 문자 배열
-	/*cout << "Hellow World" << endl;
+	srand(time(0));
+	int numbers[6] = {};
+	ChooseLotoo(numbers);
 
-	char msg[] = { 'H', 'e', 'l','l', 'o', '\0'};
-	cout << msg << endl;*/
-
-	// test1[ 주소 ] << 8바이트 (주소크기, 32bit 운영체제는 4바이트)
-	// .data 주소[H][e][l][l].....[d][\0]
-	const char* test1 = "Hello World";
-
-	// .data 주소[H][e][l][l].....[d][\0]
-	// [][][]....[][]  12개짜리 변수배열
-	// [H][e][l][l].....[d][\0]
-	// test2 = 주소
-	char test2[] = "Hello World";
-	test2[0] = 'R';
-
-	cout << test2 << endl;
-
-	// 포인터는 [주소를 담는 바구니]
-	// 배열은 [닭장] 즉, 그 자체로 같은 데이터끼리 붙어있는 '바구니 모음'
-	// - 다만 [배열 이름]은 '바구니 모음'의 [시작주소]
-
-	// 배열을 함수의 인자로 넘기게 되면?
-
-	int a = 0;
-	Test(a);
-
-	cout << a << endl;
-
-	Test(test2);
-	cout << test2 << endl;
-	
+	for (int i = 0; i < 6; i++)
+	{
+		cout << numbers[i] << " ";
+	}
+	cout << endl;
 	return 0;
 }
