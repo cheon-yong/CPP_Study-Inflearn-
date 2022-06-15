@@ -1,74 +1,94 @@
 ﻿#include <iostream>
 using namespace std;
 
-// 오늘의 주제 : 포인터 연산
+// 오늘의 주제 : 포인터 실습
 
-// 1) 주소 연산자 (&)
-// 2) 산술 연산자
-// 3) 간접 연산자
-// 4) 간접 멤버 연산자
-struct Player
+struct StatInfo
 {
-	int hp;
-	int damage;
+	int hp; // + 0
+	int attack; // + 4
+	int defence; // + 8
 };
+
+void EnterLobby();
+StatInfo CreatePlayer();
+void CreateMonster(StatInfo* info);
+bool StartBattle(StatInfo* player, StatInfo* monster);
 
 int main()
 {
-	int number = 1;
-	// 1) 주소 연산자 (&)
-	// - 해당 변수의 주소를 알려주세요
-	// - 더 정확히 말하면 해당 변수 타입(TYPE)에 따라서 TYPE * 반환
-	int* pointer = &number;
-	
-	// 2) 산술 연산자 (+ -)
-
-	number = number + 1;
-	number++;
-	++number;
-	number += number;
-	//등등..
-
-	pointer = pointer + 1;
-	pointer++;
-	++pointer;
-	pointer += 1;
-	// number += 1; 1 증가
-	// pointer += 1; 4 증가 (?)
-	// int *
-	// - * : 포인터 타입 (4 or 8 바이트) 주소를 담는 바구니!
-	// - int : 주소를 따라가면 int(4바이트 정수형 바구니)가 있다고 가정
-
-	// [1} 포인터에서 +나 - 등 산술 연산으로 1을 더하거나 빼면,
-	// 정말 '그 숫자'를 더하고 빼라는 의미가 아니다.
-	// 한번에 TYPE의 크기만큼 이동하라!
-	// 다음 / 이전 바구니로 이동하고 싶다 << [바구니 단위]의 이동으로
-	// 즉, 1을 더하면 = 바구니 1개 이동시켜라
-	// 3을 더하면 = 바구니 3개 이동시켜라
-
-	pointer += 2; // 4증가?
-
-	// 3) 간접 연산자 (*)
-	// - 포탈을 타고 해당 주소로 이동
-	*pointer = 3;
-	// number = 3;
-
-	Player player;
-	player.hp = 100;
-	player.damage = 10;
-
-	Player* playerPtr = &player;
-	
-	(*playerPtr).hp = 200;
-	(*playerPtr).damage = 20;
-
-	// 4) 간접 멤버 연산자 (->)
-	// * 간접 연산자 (포탈 타고 해당 주소로 이동)
-	// .구조체의 특정 멤버를 다룰 때 사용 (어셈블리 언어로 까면 . 사실상 그냥 덧셈)
-	// -> 는 *와 .을 동시에
-
-	playerPtr->hp = 300;
-	playerPtr->damage = 30;
-
+	EnterLobby();
 	return 0;
+}
+
+void EnterLobby()
+{
+	cout << "로비에 입장했습니다" << endl;
+
+	StatInfo player;
+	player = CreatePlayer();
+
+	// 포인터로 전달하는 것이 성능이 훨씬 우수함
+	// 복사해서 뱉어내는 방식은 많은 복사 붙여넣기가 일어나는 반면
+	// 포인터로 직접 전달하는 방식은 복사가 거의 일어나지 않음
+	StatInfo monster;
+	CreateMonster(&monster);
+	
+
+	bool victory = StartBattle(&player, &monster);
+	if (victory)
+		cout << "승리 !" << endl;
+	else
+		cout << "패배 !" << endl;
+}
+
+StatInfo CreatePlayer()
+{
+	StatInfo ret;
+
+	cout << "플레이어 생성" << endl;
+	ret.hp = 100;
+	ret.attack = 10;
+	ret.defence = 2;
+
+	return ret;
+}
+
+void CreateMonster(StatInfo* info)
+{
+	cout << "몬스터 생성" << endl;
+
+	info->hp = 40;
+	info->attack = 8;
+	info->defence = 0;
+}
+
+bool StartBattle(StatInfo* player, StatInfo* monster)
+{
+	while (true)
+	{
+		int damage = player->attack - monster->defence;
+		if (damage < 0)
+			damage = 0;
+
+		monster->hp -= damage;
+		if (monster->hp < 0)
+			monster->hp = 0;
+
+		cout << "몬스터 HP : " << monster->hp << endl;
+
+		if (monster->hp == 0)
+			return true;
+
+		damage = monster->attack - player->defence;
+		if (damage < 0)
+			damage = 0;
+
+		player->hp -= damage;
+		if (player->hp < 0)
+			player->hp = 0;
+
+		cout << "플레이어 HP : " << player->hp << endl;
+
+	}
 }
