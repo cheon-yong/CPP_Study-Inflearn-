@@ -1,94 +1,105 @@
 ﻿#include <iostream>
 using namespace std;
 
-// 오늘의 주제 : 포인터 실습
+// 오늘의 주제 : 참조
 
 struct StatInfo
 {
-	int hp; // + 0
-	int attack; // + 4
-	int defence; // + 8
+	int hp; // +0
+	int attack; // +4
+	int defence; // +8
 };
-
-void EnterLobby();
-StatInfo CreatePlayer();
-void CreateMonster(StatInfo* info);
-bool StartBattle(StatInfo* player, StatInfo* monster);
-
-int main()
-{
-	EnterLobby();
-	return 0;
-}
-
-void EnterLobby()
-{
-	cout << "로비에 입장했습니다" << endl;
-
-	StatInfo player;
-	player = CreatePlayer();
-
-	// 포인터로 전달하는 것이 성능이 훨씬 우수함
-	// 복사해서 뱉어내는 방식은 많은 복사 붙여넣기가 일어나는 반면
-	// 포인터로 직접 전달하는 방식은 복사가 거의 일어나지 않음
-	StatInfo monster;
-	CreateMonster(&monster);
-	
-
-	bool victory = StartBattle(&player, &monster);
-	if (victory)
-		cout << "승리 !" << endl;
-	else
-		cout << "패배 !" << endl;
-}
-
-StatInfo CreatePlayer()
-{
-	StatInfo ret;
-
-	cout << "플레이어 생성" << endl;
-	ret.hp = 100;
-	ret.attack = 10;
-	ret.defence = 2;
-
-	return ret;
-}
 
 void CreateMonster(StatInfo* info)
 {
-	cout << "몬스터 생성" << endl;
-
-	info->hp = 40;
+	info->hp = 100;
 	info->attack = 8;
-	info->defence = 0;
+	info->defence = 5;
 }
 
-bool StartBattle(StatInfo* player, StatInfo* monster)
+void CreateMonster(StatInfo info)
 {
-	while (true)
-	{
-		int damage = player->attack - monster->defence;
-		if (damage < 0)
-			damage = 0;
+	info.hp = 100;
+	info.attack = 8;
+	info.defence = 5;
+}
 
-		monster->hp -= damage;
-		if (monster->hp < 0)
-			monster->hp = 0;
+// 값을 수정하지 않는다면 양쪽 다 문제가 없음
 
-		cout << "몬스터 HP : " << monster->hp << endl;
+// 1) 값 전달 방식
+void PrintInfoByCopy(StatInfo info)
+{
+	cout << "----------------" << endl;
+	cout << "HP : " << info.hp << endl;
+	cout << "ATTACK : " << info.attack << endl;
+	cout << "DEFENCE : " << info.defence << endl;
+	cout << "----------------" << endl;
+}
 
-		if (monster->hp == 0)
-			return true;
+// 2) 주소 전달 방식
+void PrintInfoByPtr(StatInfo* info)
+{
+	cout << "----------------" << endl;
+	cout << "HP : " << info->hp << endl;
+	cout << "ATTACK : " << info->attack << endl;
+	cout << "DEFENCE : " << info->defence << endl;
+	cout << "----------------" << endl;
+}
 
-		damage = monster->attack - player->defence;
-		if (damage < 0)
-			damage = 0;
+// 3) 참조 전달 방식
+void PrintInfoByRef(StatInfo& info)
+{
+	cout << "----------------" << endl;
+	cout << "HP : " << info.hp << endl;
+	cout << "ATTACK : " << info.attack << endl;
+	cout << "DEFENCE : " << info.defence << endl;
+	cout << "----------------" << endl;
+}
 
-		player->hp -= damage;
-		if (player->hp < 0)
-			player->hp = 0;
 
-		cout << "플레이어 HP : " << player->hp << endl;
+// StatInfo 구조체가 1000바이트짜리 대형 구조체라면?
+// - (값 전달) StatInfo로 넘기면 1000바이트가 복사된다?
+// - (주소 전달) StatInfo는 여전히 8
+// - (참조 전달) StatInfo&는 8바이트
 
-	}
+// 값 전달처럼 편리하게 사용하고!
+// 주소 전달처럼 주소값을 이용해 진짜를 건드리는!
+// 일석이조의 방식!
+
+int main()
+{
+	// 4바이트 정수형 바구리는 사용할 예정
+	// 앞으로 바구니 이름은 number
+	// nubmer를 쓸 때는 알아서 찾아서 1을 넣어줘
+	int number = 1;
+
+	// * 
+	// int 그 바구니를 따라가면 int형 데이터가 있음
+	int* pointer = &number;
+	//pointer 바구니에 있는 주소를 타고 이동해서, 그 멀리 있는 바구니에 2를 넣음
+	*pointer = 2;
+
+
+	// 로우레벨 (어셈블리) 관점에서 실제 작동 방식은 int*와 같음
+	// 
+	int& reference = number;
+
+	// C++ 관점에서는 number라는 바구이네 또 다른 이름을 부여한 것
+	// number라는 바구이네 reference라는 다른 이름을 지어줄게
+	// 앞으로 reference라는 바구니에 뭘 꺼내거나 넣으면
+	// 실제 number 바구니(진짜)에 그 값을 꺼내거나 넣으면 됨
+
+	reference = 3;
+
+	// 그런데 또 다른 이름을 짓는 이유는?
+	// 참조 전달 때문
+
+	StatInfo info;
+	CreateMonster(&info);
+
+	PrintInfoByCopy(info);
+	PrintInfoByPtr(&info);
+	PrintInfoByRef(info);
+
+	return 0;
 }
