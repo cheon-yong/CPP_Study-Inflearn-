@@ -1,2 +1,4 @@
 ﻿  CPP_Study.cpp
+D:\study\CPP\CPP_Study\CPP_Study\CPP_Study.cpp(18): warning C4172: 지역 변수 또는 임시: a의 주소를 반환하고 있습니다.
+D:\study\CPP\CPP_Study\CPP_Study\CPP_Study.cpp(12): warning C4172: 지역 변수 또는 임시: a의 주소를 반환하고 있습니다.
   CPP_Study.vcxproj -> D:\study\CPP\CPP_Study\Debug\CPP_Study.exe
