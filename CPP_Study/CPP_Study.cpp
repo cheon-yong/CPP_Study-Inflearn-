@@ -38,7 +38,7 @@ void CreatePlayer(StatInfo* playerInfo);
 void PrintStatInfo(const char* name, const StatInfo& info);
 void EnterGame(StatInfo* playerInfo);
 void CreateMonsters(StatInfo monsterInfo[], int count);
-
+bool EnterBattle(StatInfo* playerInfo, StatInfo* monsterInfo);
 
 int main()
 {
@@ -57,6 +57,7 @@ void EnterLobby()
 		StatInfo playerInfo;
 		CreatePlayer(&playerInfo);
 		PrintStatInfo("Player", playerInfo);
+
 		EnterGame(&playerInfo);
 	}
 }
@@ -85,19 +86,19 @@ void CreatePlayer(StatInfo* playerInfo)
 		case PT_Knight:
 			playerInfo->hp = 100;
 			playerInfo->attack = 10;
-			playerInfo->defence = 10;
+			playerInfo->defence = 5;
 			ready = true;
 			break;
 		case PT_Archer:
 			playerInfo->hp = 80;
 			playerInfo->attack = 15;
-			playerInfo->defence = 5;
+			playerInfo->defence = 3;
 			ready = true;
 			break;
 		case PT_Mage:
 			playerInfo->hp = 60;
 			playerInfo->attack = 20;
-			playerInfo->defence = 3;
+			playerInfo->defence = 1;
 			ready = true;
 			break;
 		}
@@ -126,7 +127,18 @@ void EnterGame(StatInfo* playerInfo)
 
 		PrintStatInfo("Player", *playerInfo);
 
-		break;
+		PrintMessage("[1] 전투 [2] 전투 [3] 도망");
+
+		int input;
+		cin >> input;
+
+		if (input == 1 || input == 2)
+		{
+			int index = input - 1;
+			bool victory = EnterBattle(playerInfo, &monsterInfo[index]);
+			if (victory == false)
+				break;
+		}
 	}
 }
 
@@ -152,6 +164,44 @@ void CreateMonsters(StatInfo monsterInfo[], int count)
 			monsterInfo[i].attack = 10;
 			monsterInfo[i].defence = 3;
 			break;
+		}
+	}
+}
+
+bool EnterBattle(StatInfo* playerInfo, StatInfo* monsterInfo)
+{
+	while (true)
+	{
+		int damage = playerInfo->attack - monsterInfo->defence;
+		if (damage < 0)
+			damage = 0;
+
+		monsterInfo->hp -= damage;
+		if (monsterInfo->hp < 0)
+			monsterInfo->hp = 0;
+
+		PrintStatInfo("Monster", *monsterInfo);
+
+		if (monsterInfo->hp == 0)
+		{
+			PrintMessage("몬스터를 처치했습니다");
+			return true;
+		}
+
+		damage = monsterInfo->attack - playerInfo->defence;
+		if (damage < 0)
+			damage = 0;
+
+		playerInfo->hp -= damage;
+		if (playerInfo->hp < 0)
+			playerInfo->hp = 0;
+
+		PrintStatInfo("Player", *playerInfo);
+
+		if (playerInfo->hp == 0)
+		{
+			PrintMessage("Game Over");
+			return false;
 		}
 	}
 }
