@@ -3,180 +3,96 @@
 using namespace std;
 
 
-// 오늘의 주제 : 타입 변환 (포인터)
+// 오늘의 주제 : 얕은 복사 vs 깊은 복사
 
+class Pet
+{
+public:
+	Pet()
+	{
+		cout << "Pet()" << endl;
+	}
+	~Pet()
+	{
+		cout << "~Pet()" << endl;
+	}
+	Pet(const Pet& pet)
+	{
+		cout << "Pet(const Pet&)" << endl;
+	}
+};
+
+class RabbitPet : public Pet
+{
+
+};
 class Knight
 {
 public:
+	Knight()
+	{
+		_pet = new Pet();
+	}
+
+	// 복사 생성자
+	Knight(const Knight& knight)
+	{
+		_hp = knight._hp;
+		_pet = new Pet(*knight._pet); // 깊은 복사
+	}
+
+	// 복사 대입 연산자
+	Knight& operator=(const Knight& knight)
+	{
+		_hp = knight._hp;
+		_pet = new Pet(*knight._pet); // 깊은 복사
+		return *this;
+	}
+	~Knight()
+	{
+		delete _pet;
+	}
+
+public:
 	int _hp = 100;
+	Pet* _pet;
 };
 
-class Item
-{
-public:
-	Item()
-	{
-		cout << "Item()" << endl;
-	}
-
-	Item(int itemType) : _itemType(itemType)
-	{
-		cout << "Item(int itemType)" << endl;
-	}
-
-	Item(const Item& item)
-	{
-		cout << "Item(const Item&)" << endl;
-	}
-
-	virtual ~Item()
-	{
-		cout << "~Item()" << endl;
-	}
-
-	virtual void Test()
-	{
-		cout << "Test Item" << endl;
-	}
-public:
-	int _itemType = 0;
-	int _itemDbId = 0;
-
-	char _dummy[4096] = {}; // 이런 저런 정보들로 인해 비대해진...무언가...
-};
-
-enum ItemType
-{
-	IT_WEAPON = 1,
-	IT_ARMOR
-};
-
-class Weapon : public Item
-{
-public:
-	Weapon() : Item(IT_WEAPON)
-	{
-		cout << "Weapon()" << endl;
-		_damage = rand() % 100;
-	}
-	~Weapon()
-	{
-		cout << "~Weapon()" << endl;
-	}
-
-	virtual void Test()
-	{
-		cout << "Test Weapon" << endl;
-	}
-public:
-	int _damage;
-};
-
-class Armor : public Item
-{
-public:
-	Armor() : Item(IT_ARMOR)
-	{
-		cout << "Armor()" << endl;
-	}
-	~Armor()
-	{
-		cout << "~Armor()" << endl;
-	}
-};
-
-void TestItemPtr(Item* item)
-{
-	item->Test();
-}
 
 int main()
 {
-	// 연관성이 없는 클래스 사이의 포인터 변환 테스트
-	{
-		// Stack [주소] -> Heap [_hp(4)]
-		Knight* knight = new Knight();
+	Pet* pet = new Pet();
 
-		// 암시적으로는 NO
-		// 명시적으로는 OK
+	Knight knight; // 기본 생성자
+	knight._hp = 200;
 
-		// Stack [주소] -> Heap [_hp(4)]
-		/*Item* item = (Item*)knight;
-		item->_itemType = 2;
-		item->_itemDbId = 3;*/
+	Knight knight2 = knight; // 복사 생성자
+	Knight knight3(knight); //위와 동일
 
-		delete knight;
-	}
+	Knight knight3; // 기본 생성자
+	knight3 = knight; // 복사 대입 연산자
 
-	// 부모 -> 자식 변환 테스트
-	{
+	//Knight* k2 = new Knight();
 
-		Item* item = new Item();
-		Weapon* weapon = (Weapon*)item;
+	// [복사 생성자] + [복사 대입 연산자]
+	// 둘 다 안 만들어주면 컴파일러 '암시적으로' 만들어준다
 
-		delete item;
-	}
+	// 중간 결론) 컴파일러가 알아서 잘 만들어준다?
+	// 다음주제? NO!
 
-	// 자식 -> 부모 변환 테스트
-	{
-		Weapon* weapon = new Weapon();
+	// [ 얕은 복사 Shallow Copy ]
+	// 멤버 데이터를 비트열 단위로 '똑같이' 복사 (메모리 영역 값을 그대로 복사)
+	// 포인터는 주소값 바구니 -> 주소값을 똑같이 복사 -> 동일한 객체를 가리키는 상태가 됨
+	// Stack : Knight [ hp 0x1000 ] -> Heap 0x1000 Pet [     ]
+	// Stack : Knight [ hp 0x1000 ] -> Heap 0x1000 Pet [     ]
 
-		// 암시적으로 가능
-		Item* item = weapon;
-		TestItemPtr(item);
-	}
+	// [ 깊은 복사 Deep Copy ]
+	// 멤버 데이터가 참조(주소) 값이라면, 데이터를 새로 만들어준다 (원본 객체가 참조하는 대상까지 새로 만들어서 복사)
+	// 포인터는 주소값 바구니 -> 새로운 객체를 생성 -> 상이한 객체를 가리키는 상태가 됨
+	// Stack : Knight1 [ hp 0x1000 ] -> Heap 0x1000 Pet[   ]
+	// Stack : Knight1 [ hp 0x2000 ] -> Heap 0x2000 Pet[   ]
+	// Stack : Knight1 [ hp 0x2000 ] -> Heap 0x2000 Pet[   ]
 
-	// 명시적으로 타입 변환할 때는 항상 조심해야함ㄴ
-	// 암시적으로 딜 때는 안전하다?
-	// -> 평생 명시적으로 타입 변환(캐스팅)은 안하면 되는거 아닌가?
 
-	Item* inventory[20] = {};
-
-	for (int i = 0; i < 20; i++)
-	{
-		int randValue = rand() % 2 + 1;
-		switch (randValue)
-		{
-		case IT_WEAPON:
-			inventory[i] = new Weapon();
-			break;
-		case IT_ARMOR:
-			inventory[i] = new Armor();
-			break;
-		}
-	}
-
-	for (int i = 0; i < 20; i++)
-	{
-		Item* item = inventory[i];
-		if (item == nullptr)
-			continue;
-
-		if (item->_itemType == IT_WEAPON)
-		{
-			Weapon* weapon = (Weapon*)item;
-			cout << "Weapon Damage : " << weapon->_damage << endl;
-		}
-	}
-
-	// ******************************매우 매우 매우 매우 중요 *****************************
-	// 최상위 부모클래스의 소멸자에는 virtual을 붙일 것
-	// 이유?) 상속 받은 클래스의 함수를 virtual 없이 재정의할 경우 부모클래스로 형변환했을 때 부모클래스의 함수만 호출된다.
-	// 이 것이 소멸자에도 동일하게 적용되어 부모클래스의 소멸자면 호출되는데 이럴 경우 메모리가 모두 지워지지 않게 된다.
-	// 이러한 현상을 방지하기 위하여 소멸자에 virtual 키워드를 붙여 자식클래스가 부모클래스로 형변환 되더라도 
-	// 자식클래스의 소멸자와 부모클래스의 소멸자가 모두 호출되게 한다.
-	for (int i = 0; i < 20; i++)
-	{
-		Item* item = inventory[i];
-		if (item == nullptr)
-			continue;
-
-		delete item;
-	}
-
-	// [결론]
-	// - 포인터 vs 일반 타입 : 차이를 이해하자
-	// - 포인터 사이의 타입 변환(캐스팅)을 할 때는 매우 매우 조심해야 한다!
-	// - 부모-자식 관계에서 부모 클래스의 소멸자에는 잊어버리지 말고 virtual을 붙이자
 	return 0;
 }
