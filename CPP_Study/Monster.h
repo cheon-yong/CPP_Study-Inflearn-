@@ -15,6 +15,8 @@ public:
 	{
 
 	}
+
+	virtual void PrintInfo();
 protected:
 	int _monsterType;
 };
@@ -48,8 +50,8 @@ public:
 	Skeleton() : Monster(MT_SKELETON)
 	{
 		_hp = 100;
-		_attack = 5;
-		_defence = 2;
+		_attack = 15;
+		_defence = 4;
 	}
 };
 

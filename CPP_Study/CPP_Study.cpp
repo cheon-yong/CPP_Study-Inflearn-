@@ -9,6 +9,7 @@ using namespace std;
 
 int main()
 {
+	srand((unsigned int)time(nullptr));
 	Game game;
 	game.Init();
 

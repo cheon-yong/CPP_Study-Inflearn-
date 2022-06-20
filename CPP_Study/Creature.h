@@ -20,6 +20,9 @@ public:
 
 	}
 
+	virtual void PrintInfo() = 0;
+	void OnAttacked(Creature* attacker);
+	bool IsDead() { return _hp <= 0; }
 protected:
 	int _creatureType;
 	int _hp;

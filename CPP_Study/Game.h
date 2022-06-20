@@ -1,10 +1,10 @@
 #pragma once
-#include "Player.h"
 
 // [ [ Player ] ]
 
 // 전방선언
 class Player;
+class Field;
 
 class Game
 {
@@ -18,6 +18,6 @@ public:
 	void CreatePlayer();
 private:
 	Player* _player;
-
+	Field* _field;
 };
 

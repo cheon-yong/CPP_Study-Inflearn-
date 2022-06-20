@@ -1,21 +1,26 @@
 #include "Game.h"
 #include "Player.h"
+#include "Field.h"
 #include <iostream>
 using namespace std;
 
-Game::Game() : _player(nullptr)
+Game::Game() : _player(nullptr), _field(nullptr)
 {
 
 }
 
 Game::~Game()
 {
+	if (_player != nullptr)
+		delete _player;
 
+	if (_field != nullptr)
+		delete _field;
 }
 
 void Game::Init()
 {
-
+	_field = new Field();
 }
 
 void Game::Update()
@@ -24,6 +29,15 @@ void Game::Update()
 	{
 		CreatePlayer();
 	}
+
+	if (_player->IsDead())
+	{
+		delete _player;
+		_player = nullptr;
+		CreatePlayer();
+	}
+
+	_field->Update(_player);
 }
 
 void Game::CreatePlayer()

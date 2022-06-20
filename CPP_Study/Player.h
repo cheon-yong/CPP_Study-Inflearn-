@@ -21,7 +21,7 @@ public:
 	{
 
 	}
-
+	virtual void PrintInfo();
 protected:
 	int _playerType;
 };
