@@ -40,8 +40,31 @@ using namespace std;
 // - malloc (혹은 기타 calloc, realloc 등의 사촌) 을 통해 할당된 영역을 해제
 // - 힙 관리자가 할당/미할당 여부를 구분해서 관리
 
+// new / delete
+// - C++에서 추가됨
+// - malloc/free 함수! new/delete는 연산자(operator)
+
+// new[] / delete[]
+// -new가 malloc에 비해 좋긴 한데 배열과 같은 N개 데이터를 같이 할당하려면?
+
+// malloc/free vs new/delete
+// - 사용 편의성 -> new / delete
+// - 타입에 상관없이 특정한 크기의 메모리 영역을 할당받으려면? -> malloc/free 승!
+
+// 둘의 가장 근본적인 중요한 차이는
+// new / delete는 (생성 타입이 클래스일 경우) 생성자 / 소멸자를 호출
+
 class Monster
 {
+public:
+	Monster()
+	{
+		cout << "Monster" << endl;
+	}
+	~Monster()
+	{
+		cout << "~Monster" << endl;
+	}
 public:
 	int _hp;
 	int _x;
@@ -78,8 +101,6 @@ int main()
 	// - 유효한 힙 범위를 초과해서 사용하는 문제
 
 	free(pointer);
-	pointer = nullptr;
-	m1 = nullptr;
 	// free를 안한다면? 메모리 누수
 	// free를 두번한다면? double free
 	// - 이건 대부분 그냥 크래시만 나고 끝남
@@ -88,10 +109,21 @@ int main()
 	// - 프로그래머 입장 : 큰일이 발생함
 	// - 해커 입장 : 취약점 발견
 
+	// malloc 했으면 free, new 했으면 delete
+	Monster* m2 = new Monster;
+	delete m2;
 
-	m1->_hp = 100;
-	m1->_x = 1;
-	m1->_y = 2;
+	Monster* m3 = new Monster[5];
+	m3->_hp = 200;
+	m3->_x = 1;
+	m3->_y = 3;
 
+	Monster* m4 = (m3 + 1);
+	m4->_hp = 300;
+	m4->_x = 3;
+	m4->_y = 4;
+	
+	delete[] m3;
+	//delete m4;
 	return 0;
 }

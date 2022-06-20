@@ -1,3 +1,2 @@
 ﻿  CPP_Study.cpp
-D:\study\CPP\CPP_Study\CPP_Study\CPP_Study.cpp(31,10): warning C4101: 'monster' :참조되지 않은 지역 변수입니다.
   CPP_Study.vcxproj -> D:\study\CPP\CPP_Study\Debug\CPP_Study.exe
