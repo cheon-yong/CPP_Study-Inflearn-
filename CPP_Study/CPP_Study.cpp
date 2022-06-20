@@ -1,5 +1,5 @@
 ﻿#include <iostream>
-
+#include "Game.h"
 using namespace std;
 
 
@@ -9,6 +9,14 @@ using namespace std;
 
 int main()
 {
-	
+	Game game;
+	game.Init();
+
+	while (true)
+	{
+		// 매 프레임
+		game.Update();
+	}
+
 	return 0;
 }

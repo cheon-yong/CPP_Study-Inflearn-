@@ -28,6 +28,7 @@ protected:
 
 class Knight : public Player
 {
+public:
 	Knight() : Player(PT_Knight)
 	{
 		_hp = 150;
@@ -38,6 +39,7 @@ class Knight : public Player
 
 class Archer : public Player
 {
+public:
 	Archer() : Player(PT_Archer)
 	{
 		_hp = 80;
@@ -48,6 +50,7 @@ class Archer : public Player
 
 class Mage : public Player
 {
+public:
 	Mage() : Player(PT_Mage)
 	{
 		_hp = 50;
