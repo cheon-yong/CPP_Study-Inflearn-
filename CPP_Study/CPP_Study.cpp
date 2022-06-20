@@ -5,12 +5,23 @@ using namespace std;
 
 // 오늘의 주제 : 타입 변환 (포인터)
 
+class Knight
+{
+public:
+	int _hp = 100;
+};
+
 class Item
 {
 public:
 	Item()
 	{
 		cout << "Item()" << endl;
+	}
+
+	Item(int itemType) : _itemType(itemType)
+	{
+
 	}
 
 	Item(const Item& item)
@@ -30,56 +41,92 @@ public:
 	char _dummy[4096] = {}; // 이런 저런 정보들로 인해 비대해진...무언가...
 };
 
-void TestItem(Item item)
+enum ItemType
 {
+	IT_WEAPON = 1,
+	IT_ARMOR
+};
 
-}
-
-void TestItemPtr(Item* item)
+class Weapon : public Item
 {
+public:
+	Weapon() : Item(IT_WEAPON)
+	{
+		cout << "Weapon()" << endl;
+	}
+	~Weapon()
+	{
+		cout << "~Weapon()" << endl;
+	}
+};
 
-}
+class Armor : public Item
+{
+public:
+	Armor() : Item(IT_ARMOR)
+	{
+		cout << "Armor()" << endl;
+	}
+	~Armor()
+	{
+		cout << "~Armor()" << endl;
+	}
+};
 
 
 int main()
 {
-	// 복습
+	// 연관성이 없는 클래스 사이의 포인터 변환 테스트
 	{
-		// Stack [ type(4) dbid(4) dummy(4096)  ]
-		Item item;
+		// Stack [주소] -> Heap [_hp(4)]
+		Knight* knight = new Knight();
 
-		// Stack [ 주소(4 or 8) ] -> Heap [ type(4) dbid(4) dummy(4096) ]
-		Item* item2 = new Item();
+		// 암시적으로는 NO
+		// 명시적으로는 OK
 
-		TestItem(item);
-		TestItem(*item2);
+		// Stack [주소] -> Heap [_hp(4)]
+		/*Item* item = (Item*)knight;
+		item->_itemType = 2;
+		item->_itemDbId = 3;*/
 
-		TestItemPtr(&item);
-		TestItemPtr(item2);
-
-
-		// 메모리 누수(Memory Leak) -> 점점 가용 메모리가 줄어들어서 Crash
-		delete item2;
+		delete knight;
 	}
 
-	// 배열
+	// 부모 -> 자식 변환 테스트
 	{
-		cout << "-----------------------------------" << endl;
 
-		// 진짜 아이템이 100개 있는 것 (스택 메모리에 올라와 있는)
-		Item item3[100] = {};
+		Item* item = new Item();
+		Weapon* weapon = (Weapon*)item;
 
-		cout << "-----------------------------------" << endl;
+		delete item;
+	}
 
-		// 아이템이 100개 있을까?
-		// 아이템을 가리키는 바구니가 100개. 실제로는 1개도 없을 수 있음
-		Item* item4[100] = {};
+	// 자식 -> 부모 변환 테스트
+	{
+		Weapon* weapon = new Weapon();
 
-		for (int i = 0; i < 100; i++)
-			item4[i] = new Item();
+		// 암시적으로 가능
+		Item* item = weapon;
+	}
 
-		for (int i = 0; i < 100; i++)
-			delete item4[i];
+	// 명시적으로 타입 변환할 때는 항상 조심해야함ㄴ
+	// 암시적으로 딜 때는 안전하다?
+	// -> 평생 명시적으로 타입 변환(캐스팅)은 안하면 되는거 아닌가?
+
+	Item* inventory[20] = {};
+
+	for (int i = 0; i < 20; i++)
+	{
+		int randValue = rand() % 2 + 1;
+		switch (randValue)
+		{
+		case IT_WEAPON:
+			inventory[i] = new Weapon();
+			break;
+		case IT_ARMOR:
+			inventory[i] = new Armor();
+			break;
+		}
 	}
 	return 0;
 }
