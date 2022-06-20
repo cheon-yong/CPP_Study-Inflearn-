@@ -21,7 +21,7 @@ public:
 
 	Item(int itemType) : _itemType(itemType)
 	{
-
+		cout << "Item(int itemType)" << endl;
 	}
 
 	Item(const Item& item)
@@ -29,11 +29,15 @@ public:
 		cout << "Item(const Item&)" << endl;
 	}
 
-	~Item()
+	virtual ~Item()
 	{
 		cout << "~Item()" << endl;
 	}
 
+	virtual void Test()
+	{
+		cout << "Test Item" << endl;
+	}
 public:
 	int _itemType = 0;
 	int _itemDbId = 0;
@@ -53,11 +57,19 @@ public:
 	Weapon() : Item(IT_WEAPON)
 	{
 		cout << "Weapon()" << endl;
+		_damage = rand() % 100;
 	}
 	~Weapon()
 	{
 		cout << "~Weapon()" << endl;
 	}
+
+	virtual void Test()
+	{
+		cout << "Test Weapon" << endl;
+	}
+public:
+	int _damage;
 };
 
 class Armor : public Item
@@ -73,6 +85,10 @@ public:
 	}
 };
 
+void TestItemPtr(Item* item)
+{
+	item->Test();
+}
 
 int main()
 {
@@ -107,6 +123,7 @@ int main()
 
 		// 암시적으로 가능
 		Item* item = weapon;
+		TestItemPtr(item);
 	}
 
 	// 명시적으로 타입 변환할 때는 항상 조심해야함ㄴ
@@ -128,5 +145,38 @@ int main()
 			break;
 		}
 	}
+
+	for (int i = 0; i < 20; i++)
+	{
+		Item* item = inventory[i];
+		if (item == nullptr)
+			continue;
+
+		if (item->_itemType == IT_WEAPON)
+		{
+			Weapon* weapon = (Weapon*)item;
+			cout << "Weapon Damage : " << weapon->_damage << endl;
+		}
+	}
+
+	// ******************************매우 매우 매우 매우 중요 *****************************
+	// 최상위 부모클래스의 소멸자에는 virtual을 붙일 것
+	// 이유?) 상속 받은 클래스의 함수를 virtual 없이 재정의할 경우 부모클래스로 형변환했을 때 부모클래스의 함수만 호출된다.
+	// 이 것이 소멸자에도 동일하게 적용되어 부모클래스의 소멸자면 호출되는데 이럴 경우 메모리가 모두 지워지지 않게 된다.
+	// 이러한 현상을 방지하기 위하여 소멸자에 virtual 키워드를 붙여 자식클래스가 부모클래스로 형변환 되더라도 
+	// 자식클래스의 소멸자와 부모클래스의 소멸자가 모두 호출되게 한다.
+	for (int i = 0; i < 20; i++)
+	{
+		Item* item = inventory[i];
+		if (item == nullptr)
+			continue;
+
+		delete item;
+	}
+
+	// [결론]
+	// - 포인터 vs 일반 타입 : 차이를 이해하자
+	// - 포인터 사이의 타입 변환(캐스팅)을 할 때는 매우 매우 조심해야 한다!
+	// - 부모-자식 관계에서 부모 클래스의 소멸자에는 잊어버리지 말고 virtual을 붙이자
 	return 0;
 }
