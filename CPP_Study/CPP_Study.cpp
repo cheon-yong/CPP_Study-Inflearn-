@@ -3,90 +3,55 @@
 using namespace std;
 
 
-// 오늘의 주제 : 객체 지향 마무리
+// 오늘의 주제 : 동적 할당
 
-// 1) struct vs class
+// 메모리 구조 복습
+// - 실행할 코드가 저장되는 영역 -> 코드 영역
+// - 전역(global)/정적(static) 변수 -> 데이터 영역
+// - 지역 변수/매개 변수 -> 스택영역
+// - 동적 할당 -> 힙 영역
 
-// C++ 에서는 struct 나 class 나 큰 차이가 없음
-// struct는 기본 접근 지정자가 public이고, class는 private이다
-// C++는 C언어에서 파생되어 발전했기 때문에 호환성을 지키기 위함
-// -> struct는 그냥 주고체 (데이터 묶음)을 표현하는 용도
-// -> class 객체 지향 프로그래밍의 특징을 나타내는 용도
+// 지금까지 데이터영역 / 스택 영역을 이용해서
+// 잘 만들어왔는데
+// 굳이 새로운 것이 필요한가
 
+// 실제 상황
+// - MMORPG 동접 1명 ~ 5만명, 몬스터 1마리 ~ 500만 마리
+// - 몬스터 생성 이벤트 -> 5분동안 몬스터가 10배 많이 나옴
 
+// - 스택 영역
+// 함수가 끝나면 같이 정리되는 불안정한 메모리
+// 잠시 함수에 매개변수로 넘기는 등의 용도로는 ok
+// 
+// - 메모리 영역
+// 프로그램이 실행되는 도중에는 '무조건' 사용되는 메모리
 
-struct TestStruct
-{
-	int _a;
-	int _b;
-};
+// 희망사항)
+// - 필요할 때만 사용하고, 필요없으면 반납할 수 있는 것?
+// - 그러면서도 (스택과는 다르게) 우리가 생성/소멸 시점을 관리할 수 있는 것?
+// - 그런 메모리 영역이 HEAP
+// 동적할당과 연관된 함수/연산자 : malloc, free, new, delete, new[], delete[]
 
-class TestClass
-{
-	int _a;
-	int _b;
-};
-
-
-// 2) static 변수, static 함수 (static = 정적 = 고정된)
-
-class Marine
+class Monster
 {
 public:
 	int _hp;
-
-	void TakeDamage(int damage)
-	{
-		_hp -= damage;
-	}
-
-	static void SetAttack()
-	{
-		s_attack = 100;
-	}
-
-	// 특정 마린 객체와는 무관
-	// 마린이라는 '클래스' 자체와 연관
-	static int s_attack; // 설계도상으로만 존재
+	int _x;
+	int _y;
 };
-
-int Marine::s_attack = 0;
-
-class Player
-{
-public:
-	int _id;
-};
-
-int GenerateId()
-{
-	// 생명주기 : 프로그램 시작/종료 (메모리에 항상 올라가 있음)
-	// 가시범위 : 
-
-	// 정적 지역 객체, 처음 호출 됐을 때만 초기화되고 이후 유지
-	//1 2 3 4 5...
-	static int s_id = 1;
-
-
-	return s_id++;
-}
 
 int main()
 {
-	Marine m1;
-	m1._hp = 40;
-	Marine::s_attack = 6;
+	// 유저영역 [메모장] [LOL] [곰플레이어] ....
+	// -------------------------
+	// 커널영역 (Windows 등의 핵심코드)
 
-	Marine m2;
-	m2._hp = 40;
+	// 유저 영역) 운영체제에서 제공하는 API 호출
+	// 커널 영역) 메모리 할당해서 건내줌
+	// 유저 영역) 잘 쓰겠습니다~
 
-	// 마린 공격력 업그레이드 완료! (Academy에서 업그레이드 끝!)
-	Marine::s_attack = 7;
-	Marine::SetAttack();
-
-	// 스택 아님. .data 영역
-	static int id = 10;
-	int a = id;
-
+	// [                        ]
+	// C++ 에서는 기본적으로 CRT(C런타임 라이브러리)의 [힙 관리자]를 통해 힙 영역 사용
+	// 단, 정말 원한다면 우리가 직접 API를 통해 힙을 생성하고 관리할 수도 있음 (MMORPG 서버 메모리 풀링)
 	return 0;
 }
