@@ -3,147 +3,84 @@
 using namespace std;
 
 
-// 오늘의 주제 : 얕은 복사 vs 깊은 복사
+// 오늘의 주제 : 캐스팅 (타입 변환)
 
-class Pet
-{
-public:
-	Pet()
-	{
-		cout << "Pet()" << endl;
-	}
-	~Pet()
-	{
-		cout << "~Pet()" << endl;
-	}
-	Pet(const Pet& pet)
-	{
-		cout << "Pet(const Pet&)" << endl;
-	}
-	Pet& operator=(const Pet& pet)
-	{
-		cout << "Pet(const Pet&)" << endl;
-		return *this;
-	}
-};
-
-class RabbitPet : public Pet
-{
-
-};
+// 1) static_cast
+// 2) dynamic_cast
+// 3) const_cast
+// 4) reinterpret_cast
 
 class Player
 {
 public:
-	Player()
-	{
-		cout << "Player()" << endl;
-	}
-	Player(const Player& player)
-	{
-		cout << "Player(const Player&)" << endl;
-		_level = player._level;
-	}
-	Player& operator=(const Player& player)
-	{
-		cout << "operator=(const Player&)" << endl;
-		_level = player._level;
-		return *this; 
-	}
-public:
-	int _level = 0;
+	virtual ~Player() {}
 };
 
 class Knight : public Player
 {
-public:
-	Knight()
-	{
-
-	}
-
-	// 복사 생성자
-	/*Knight(const Knight& knight) : Player(knight), _pet(knight._pet)
-	{
-		cout << "Knight(const Knight&)" << endl;
-		_hp = knight._hp;
-	}*/
-
-	// 복사 대입 연산자
-	Knight& operator=(const Knight& knight)
-	{
-		cout << "operator=(const Knight&)" << endl;
-		Player::operator=(knight);
-		_pet = knight._pet;
-		_hp = knight._hp;
-		return *this;
-	}
-	~Knight()
-	{
-	}
 
 public:
-	int _hp = 100;
-	Pet _pet;
+	virtual ~Knight() {}
 };
 
+class Archer : public Player
+{
+
+public:
+	virtual ~Archer() {}
+};
+
+class Dog
+{
+
+};
+
+void PrintName(char* str)
+{
+	cout << str << endl;
+}
 
 int main()
 {
-	Pet* pet = new Pet();
+	// static_cast : 타입 원칙에 비춰볼 때 상식적인 캐스팅만 허용
+	// 1) int <-> float
+	// 2) Player* -> Knight* (다운 캐스팅)
 
-	Knight knight; // 기본 생성자
-	knight._hp = 200;
+	int hp = 100;
+	int maxHp = 200;
+	float ratio = static_cast<float>(hp) / maxHp;
 
-	//cout << "--------------복사 생성자---------------" << endl;
-	//Knight knight2 = knight; // 복사 생성자
-	////Knight knight3(knight); //위와 동일
+	// 부모 -> 자식 자식 ->부모
+	Player* p = new Player();
+	Knight* k1 = static_cast<Knight*>(p);
 
-	Knight knight3; // 기본 생성자
-	cout << "--------------복사 대입 연산자---------------" << endl;
-	knight3 = knight; // 복사 대입 연산자
+	// 잘못된 방식
+	/*Player* p = new Archer(); // 아처는 Player가 아님
+	Knight* k1 = static_cast<Knight*>(p);*/
 
-	//Knight* k2 = new Knight();
 
-	// [복사 생성자] + [복사 대입 연산자]
-	// 둘 다 안 만들어주면 컴파일러 '암시적으로' 만들어준다
+	// dynamic_cast : 상속 관계에서의 안전 형변환
+	// RTTI (RunTime Type Information)
+	// 다형성을 활용하는 방식
+	// - virtual 함수를 하나라도 만들면, 객체의 메모리에 가상 함수 테이블 (vftable) 주소가 기입된다
+	// - 만약 잘못된 타입으로 캐스팅을 했으면, nullptr 반환 ************
+	// 이를 이용해서 맞는 타입으로 캐스팅을 했는지 확인을 유용하다
+	Knight* k2 = dynamic_cast<Knight*>(p);
 
-	// 중간 결론) 컴파일러가 알아서 잘 만들어준다?
-	// 다음주제? NO!
+	// const_cast : const를 붙이거나 떼거나
+	PrintName(const_cast<char*>("Itsme"));
 
-	// [ 얕은 복사 Shallow Copy ]
-	// 멤버 데이터를 비트열 단위로 '똑같이' 복사 (메모리 영역 값을 그대로 복사)
-	// 포인터는 주소값 바구니 -> 주소값을 똑같이 복사 -> 동일한 객체를 가리키는 상태가 됨
-	// Stack : Knight [ hp 0x1000 ] -> Heap 0x1000 Pet [     ]
-	// Stack : Knight [ hp 0x1000 ] -> Heap 0x1000 Pet [     ]
+	// reinterpret_cast
+	// 가장 위험하고 강력한 형태의 캐스팅
+	// 're-interpret' : 다시-간주하다/생각하다
+	// - 포인터랑 전혀 관계없는 다른 타입 변환 등
+	__int64 address = reinterpret_cast<__int64>(k2);
 
-	// [ 깊은 복사 Deep Copy ]
-	// 멤버 데이터가 참조(주소) 값이라면, 데이터를 새로 만들어준다 (원본 객체가 참조하는 대상까지 새로 만들어서 복사)
-	// 포인터는 주소값 바구니 -> 새로운 객체를 생성 -> 상이한 객체를 가리키는 상태가 됨
-	// Stack : Knight1 [ hp 0x1000 ] -> Heap 0x1000 Pet[   ]
-	// Stack : Knight1 [ hp 0x2000 ] -> Heap 0x2000 Pet[   ]
-	// Stack : Knight1 [ hp 0x2000 ] -> Heap 0x2000 Pet[   ]
+	//Dog* dog1 = k2;
+	Dog* dog1 = reinterpret_cast<Dog*>(k2);
 
-	// 실험)
-	// - 암시적 복사 생성자 Steps
-	// 1) 부모 클래스의 복사 생성자 호출
-	// 2) 멤버 클래스의 복사 생성자 호출
-	// 3) 멤버가 기본 타입일 경우 메모리 복사 (얕은 복사 Shallow Copy)
-	// - 명시적 복사 생성자 Steps
-	// 1) 부모 클래스의 기본 생성자 호출
-	// 2) 멤버 클래스의 기본 생성자 호출
+	void* p = malloc(1000);
+	Dog* dog2 = reinterpret_cast<Dog*>(p);
 
-	// - 암시적 복사 대입 연산자 Steps
-	// 1) 부모 클래스의 복사 대입 연산자 호출
-	// 2) 멤버 클래스의 복사 대입 연산자 호출
-	// 3) 멤버가 기본 타입일 경우 메모리 복사 (얕은 복사 Shallow Copy)
-	// - 명시적 복사 대입 연산자 Steps
-	// 1) 알아서 해주는거 없음
-
-	// 왜 이렇게 혼란스러울까?
-	// 객체를 '복사' 한다는 것은 두 객체의 값들을 일치시키려는 것
-	// 따라서 기본적으로 얕은 복사 (Shallow Copy) 방식으로 동작
-
-	// 명시적 복사 -> [모든 책임]을 프로그래머한테 위임하겠다는 의미
 	return 0;
 }
