@@ -2,6 +2,7 @@
 using namespace std;
 #include <vector>
 
+
 // 오늘의 주제 : vector
 int main()
 {
@@ -17,58 +18,62 @@ int main()
 	// - 처음/끝 삽입/삭제
 	// - 임의 접근
 
-	// 배열
-	const int MAX_SIZE = 10;
-	int arr[MAX_SIZE] = { };
+	// 반복자(Iterator) : 포인터와 유사한 개념, 컨테이너의 원소(데이터)를 가리키고, 다음/이전 원소로 이동 가능
+	vector<int> v(10);
 
-	for (int i = 0; i < MAX_SIZE; i++)
-		arr[i] = i;
+	for (vector<int>::size_type i = 0; i < v.size(); i++)
+		v[i] = i;
 
-	for (int i = 0; i < MAX_SIZE; i++)
+	/*vector<int>::iterator it;
+	int* ptr;
+
+	it = v.begin();
+	ptr = &v[0];
+
+	cout << (*it) << endl;
+	cout << *ptr << endl;
+
+	it++;
+	++it;
+
+	ptr++;
+	++ptr;
+
+	it--;
+	--it;
+
+	ptr--;
+	--ptr;
+
+	it += 2;
+	it = it - 2;
+
+	ptr += 2;
+	ptr = ptr - 2;
+
+	vector<int>::iterator itBegin = v.begin();
+	vector<int>::iterator itEnd = v.end();*/
+
+	// 더 복잡해보이는데?
+	// // 다른 컨테이너는 v[i]와 같은 인덱스 접근이 안될 수도 있음
+	// iterator는 vector뿐만 아니라, 다른 컨테이너에도 공통적으로 있는 개념
+	for (vector<int>::iterator it = v.begin(); it != v.end(); ++it)
 	{
-		//	cout << arr[i] << endl;
+		cout << (*it) << endl;
 	}
-		
-	// 동적 배열
-	// 매우 매우 중요한 개념 -> 어떤 마법을 부렸길래 배열을 '유동적으로' 사용한 것인가??
+	int* ptrBegin = &v[0];
+	int* ptrEnd = ptrBegin + 10;
 
-	// 1) (여유분을 두고) 메모리를 할당한다
-	// 2) 여유분까지 꽉 찼으면, 메모리를 증설한다
-
-	// Q1) 여유분은 얼만큼이 적당할까?
-	// Q2) 증설은 얼만큼 해야할까?
-	// Q3) 기존 데이터를 어떻게 처리할까?
-
-	// 생성과 동시에 resize
-	vector<int> v(1000);
-	vector<int> v1(1000, 0);
-	vector<int> v2 = v1;
-
-	
-
-	// size(실제 사용 데이터 개수)
-	// 1 2 3 4 5 6....
-	//v.resize(1000);
-	//v.reserve(1000);
-	// capacity (여유분을 포하함 용량 개수) 
-	// 1 2 3 4 6 9 13 19 28 42 .. (50퍼만큼 더)(늘어난 것은 줄어들지 않음)
-	for (int i = 0; i < 1000; i++)
+	for (int* ptr = ptrBegin; ptr != ptrEnd; ++ptr)
 	{
-		v.push_back(100);
-		//v[i] = 100;
-		//cout << v.size() << " " << v.capacity() << endl;
+		cout << (*ptr) << endl;
 	}
 
-	
-	/*const int size = v.size();
-	for (int i = 0; i < size; i++)
+	//vector<int>::const_iterator cit1 = v.cbegin();
+	for (vector<int>::reverse_iterator it = v.rbegin(); it != v.rend(); ++it)
 	{
-		cout << v[i] << endl;
-	}*/
-	
-	// 완전 클리어를 위해서는 swap이 필요
-	v.clear();
-	vector<int>().swap(v);
-	cout << v.size() << " " << v.capacity() << endl;
+		cout << (*it) << endl;
+	}
+
 	return 0;
 }
