@@ -2,99 +2,69 @@
 #include <stdlib.h>
 using namespace std;
 
-// 오늘의 주제 : 함수 객체
-
-void HelloWorld()
-{
-	cout << "Hellow World" << endl;
-}
-
-void HelloNumber(int number)
-{
-	cout << "Hello Number " << number << endl;
-}
+// 오늘의 주제 : 템플릿 기초
 
 class Knight
 {
 public:
-	void AddHp(int addHp)
-	{
-		_hp += addHp;
-	}
+	//
 
-private:
+public:
 	int _hp = 100;
 };
 
-class Functor
+
+template<typename T>
+void Print(T a)
 {
-public:
-	void operator()()
-	{
-		cout << "Functor Test" << endl;
-		cout << _value << endl;
-	}
+	cout << a << endl;
+}
 
-	bool operator()(int num)
-	{
-		cout << "Functor Test" << endl;
-		_value += num;
-		cout << _value << endl;
-		return true;
-	}
-private:
-	int _value = 0;
-
-};
-
-class MoveTask
+template<typename T1, typename T2>
+void Print(T1 a, T2 b)
 {
-public:
-	void operator()()
-	{
-		// TODO
-		cout << "해당 좌표로 플레이어 이동" << endl;
-	}
-public:
-	int _playerId;
-	int _posX;
-	int _posY;
-};
+	cout << a << " " << b << endl;
+}
+
+template<typename T>
+T Add(T a, T b)
+{
+	return a + b;
+}
+
+// 연산자 오버로딩 (전역함수 버전)
+ostream& operator<<(ostream & os, const Knight & k)
+{
+	os << k._hp;
+	return os;
+}
+
+// 템플릿 특수화
+template<>
+void Print(Knight a)
+{
+	cout << "Knight!!!!!!!!!!!!!!!!" << endl;
+	cout << a._hp << endl;
+}
 
 int main()
 {
-	// 함수 객체 (Functor) : 함수처럼 동작하는 객체
-	// 함수 포인터의 단점
+	// 템플릿 : 함수나 클래스를 찍어내는 틀
+	// 1) 함수 템플릿
+	// 2) 클래스 템플릿
 
-	// 함수 포인터 선언
+	Print(50);
+	Print(50.0f);
+	Print(50.0);
+	Print("HelloWorld");
 
-	void (*pfunc)(void);
+	int result1 = Add(1, 2);
+	float result2 = Add(1.2f, 2.2f);
 
-	pfunc = &HelloWorld;
-	//pfunc();
-
-	// 함수 포인터 단점
-	// 1) 시그니처가 안 맞으면 사용할 수 없다
-	// 2) 상태를 가질 수 없다
-
-	// [함수처럼 동작]하는 객체
-	// () 연산자 오버로딩
-
-	Functor functor;
-	functor();
-	bool ret = functor(123);
-
-	// MMO에서 함수 객체를 사용하는 예시
-	// 클라 <-> 서버
-	// 서버 : 클라가 보내준 네트워크 패킷을 받아서 처리
-	// ex) 클라 : 나 (5, 0) 좌표로 이동시켜줘!
-
-	MoveTask task;
-	task._playerId = 100;
-	task._posX = 5;
-	task._posY = 0;
-
-	task();
+	Print(100, "Hello");
+	
+	Knight k1;
+	Print(k1);
 
 	return 0;
 }
