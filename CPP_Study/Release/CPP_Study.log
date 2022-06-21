@@ -1,0 +1,6 @@
+﻿  CPP_Study.cpp
+  코드를 생성하고 있습니다.
+  Previous IPDB not found, fall back to full compilation.
+D:\study\CPP\CPP_Study\CPP_Study\CPP_Study.cpp(42): error C4700: 초기화되지 않은 'item' 지역 변수를 사용했습니다.
+  All 11 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+LINK : fatal error LNK1257: 코드를 생성하지 못했습니다.
