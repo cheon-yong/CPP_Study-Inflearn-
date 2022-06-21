@@ -2,69 +2,76 @@
 #include <stdlib.h>
 using namespace std;
 
-// 오늘의 주제 : 템플릿 기초
+// 오늘의 주제 : 콜백 (callback)
 
-class Knight
+class Item
 {
 public:
-	//
 
 public:
-	int _hp = 100;
+	int _itemId = 0;
+	int _rarity = 0;
+	int _ownerId = 0;
 };
 
+class FindByOwnerId
+{
+public:
+	bool operator()(const Item* item)
+	{
+		return (item->_ownerId == _ownerId);
+	}
+public:
+	int _ownerId;
+};
+
+class FindByRarity
+{
+public:
+	bool operator()(const Item* item)
+	{
+		return (item->_rarity == _rarity);
+	}
+public:
+	int _rarity;
+};
 
 template<typename T>
-void Print(T a)
+Item* FindItem(Item items[], int itemCount, T selector)
 {
-	cout << a << endl;
-}
+	for (int i = 0; i < itemCount; i++)
+	{
+		Item* item = &items[i];
+		if (selector(item))
+			return item;
 
-template<typename T1, typename T2>
-void Print(T1 a, T2 b)
-{
-	cout << a << " " << b << endl;
-}
+		return item;
+	}
 
-template<typename T>
-T Add(T a, T b)
-{
-	return a + b;
-}
-
-// 연산자 오버로딩 (전역함수 버전)
-ostream& operator<<(ostream & os, const Knight & k)
-{
-	os << k._hp;
-	return os;
-}
-
-// 템플릿 특수화
-template<>
-void Print(Knight a)
-{
-	cout << "Knight!!!!!!!!!!!!!!!!" << endl;
-	cout << a._hp << endl;
+	return nullptr;
 }
 
 int main()
 {
-	// 템플릿 : 함수나 클래스를 찍어내는 틀
-	// 1) 함수 템플릿
-	// 2) 클래스 템플릿
+	// 함수 포인터 + 함수 객체 + 템플릿
+	// 콜백 (Callback) : 다시 호출하다? 역으로 호출하다?
 
-	Print(50);
-	Print(50.0f);
-	Print(50.0);
-	Print("HelloWorld");
+	// 게임을 만들 때 이런 콜백의 개념이 자주 등장한다.
+	// ex) MoveTask 실습 등
 
-	int result1 = Add(1, 2);
-	float result2 = Add(1.2f, 2.2f);
+	// 어떤 상황이 일어나면 -> 이 기능을 호출해줘
+	// ex) UI 스킬 버튼을 누르면 -> 스킬을 쓰는 함수를 호출
 
-	Print(100, "Hello");
-	
-	Knight k1;
-	Print(k1);
+	Item items[10];
+
+	FindByOwnerId functor1;
+	functor1._ownerId = 100;
+
+	FindByRarity functor2;
+	functor2._rarity = 1;
+
+	FindItem(items, 10, functor1);
+	FindItem(items, 10, functor2);
 
 	return 0;
 }
