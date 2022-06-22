@@ -75,5 +75,56 @@ int main()
 		cout << (*it) << endl;
 	}
 
+
+	// - 중간 삽입/삭제 (BAD) 중간점을 기준으로 모든 요소를 움직이기 때문
+	// - 처음/끝 삽입/삭제 (처음 삽입/삭제는 BAD / 끝 삽입/삭제는 GOOD)
+	// - 임의 접근(Random Access)
+
+	// vector = 동적 배열 = 동적으로 커지는 배열 = 배열
+	// 원소가 하나의 메모리 블록에 연속하게 저장된다!!
+
+	// [                     ]
+	// [                                ]
+
+	// i번째 데이터에 접근 (임의접근)
+	// v[i] = 3; 
+
+	//vector<int>::iterator insertIt = v.insert(v.begin() + 2, 5);
+	//vector<int>::iterator eraseIt = v.erase(v.begin() + 2);
+	//vector<int>::iterator eraseIt2 = v.erase(v.begin() + 2, v.begin() + 4);
+
+	// 벡터를 스캔하면서 3이라는 데이터가 있으면 일괄삭제하고 싶다!
+
+	for (vector<int>::iterator it = v.begin(); it != v.end();)
+	{
+		int data = *it;
+		if (data == 3)
+		{
+			it = v.erase(it); // 삭제된 곳의 iterator를 반환
+			// v.erase(it); // 문제 발생
+			// break;
+		}
+		else
+		{
+			++it;
+		}
+		
+		// iterator를 erase하게 되면 사용하고 있는 iterator가 null로 처리가 됨
+		// 그렇게 때문에 v.erase(it)를 했을 때 반환해주는 it를 이용해서 이후 처리를 해야하며
+		// for문에 무조건 ++it를 해주면 연속으로 지워주고 싶은 값이 올 경우 누락될 수 있음
+		// ex)
+		// 1 2 3 3 4 5 6
+		//     it
+		// -------erase-------
+		// 1 2 3 4 5 6
+		//     it
+		// ------- ++it -------
+		// 1 2 3 4 5 6 
+		//       it
+
+		// 그렇기 때문에 else로 ++it처리 해주어야함
+		
+	}
+	
 	return 0;
 }
