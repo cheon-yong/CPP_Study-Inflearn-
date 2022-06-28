@@ -4,107 +4,107 @@ using namespace std;
 #include <list>
 #include <deque>
 #include <map>
-
-// 오늘의 주제 : map
-
-class Player
-{
-public:
-	Player() : _playerId(0) { }
-	Player(int playerId) : _playerId(playerId) { }
-public:
-	int _playerId;
-};
+#include <set>
+// 오늘의 주제 : set, multimap, multiset
 
 int main()
 {
-	// 연관 컨테이너	
+	// map은 (key, value) 형태
 
-	// map : 균형 이진 트리 (AVL)
-	// - 노드 기반
+	// set은 key = value
+	set<int> s;
 
-	class Node
+	// 넣고
+	s.insert(10);
+	s.insert(30);
+	s.insert(20);
+	s.insert(50);
+	s.insert(40);
+	s.insert(70);
+	s.insert(90);
+	s.insert(80);
+	s.insert(100);
+	// 빼고
+	s.erase(40);
+	// 찾고
+	set<int>::iterator findIt = s.find(20);
+	if (findIt == s.end())
 	{
-	public:
-		Node* _left;
-		Node* _right;
-
-		pair<int, Player*> _data;
-		//int _key;
-		//Player* _value;
-	};
-	srand(static_cast<unsigned int>(time(nullptr)));
-	map<int, int> m;
-
-	m.insert(make_pair(1, 100));
-	m.insert(make_pair(1, 200)); // key 중복 불가
-
-	// 10만명 입장
-	for (int i = 0; i < 100000; i++)
-	{
-		m.insert(pair<int, int>(i, i * 100));
+		cout << "못 찾음" << endl;
 	}
-
-	// 5만명 퇴장
-	for (int i = 0; i < 50000; i++)
-	{
-		int randomValue = rand() % 50000;
-
-		// Erase By Key
-		m.erase(randomValue);
-	}
-
-	// Q) ID = 1만인 Player를 찾고 싶다!
-	// A) 매우 빠르게 찾을 수 있음
-
-	map<int, int>::iterator findIt = m.find(10000);
-	if (findIt != m.end())
+	else
 	{
 		cout << "찾음" << endl;
 	}
-	else
+	// 순회하고
+	for (set<int>::iterator it = s.begin(); it != s.end(); ++it)
 	{
-		cout << "못찾음" << endl;
+		cout << (*it) << endl;
 	}
+	cout << "--------------------------" << endl;
+
+	multimap<int, int> mm;
+
+	// 넣고
+	mm.insert(make_pair(1, 100));
+	mm.insert(make_pair(1, 200));
+	mm.insert(make_pair(1, 300));
+	mm.insert(make_pair(2, 400));
+	mm.insert(make_pair(2, 500));
+
+	// mm[1] = 500;
+
+	// 빼고
+	unsigned int count = mm.erase(1);
+
+	// 찾고
+	/*multimap<int, int>::iterator itFind = mm.find(1);
+	if (itFind != mm.end())
+	{
+		mm.erase(itFind);
+	}*/
+
+	pair<multimap<int, int>::iterator, multimap<int, int>::iterator> itPair;
+	itPair = mm.equal_range(1);
+
+	multimap<int, int>::iterator itBegin = mm.lower_bound(1);
+	multimap<int, int>::iterator itEnd = mm.upper_bound(1);
+
+
+	for (multimap<int, int>::iterator it = itPair.first; it != itPair.second; ++it)
+	{
+		cout << it->first << " " << it->second << endl;
+	}
+	cout << "--------------------------" << endl;
+
+	multiset<int> ms;
+
+	// 넣고
+	ms.insert(100);
+	ms.insert(100);
+	ms.insert(100);
+	ms.insert(200);
+	ms.insert(200);
+
+	// 찾고
+	multiset<int>::iterator findIt2 = ms.find(100);
+
+	pair<multiset<int>::iterator, multiset<int>::iterator> itPair2;
+	itPair2 = ms.equal_range(100);
 	
-	// map 순회
-	for (map<int, int>::iterator it = m.begin(); it != m.end(); ++it)
+	for (multiset<int>::iterator it = itPair2.first; it != itPair2.second; ++it)
 	{
-		pair<const int, int>& p = (*it);
-		int key = p.first; // (*it).first it->first
-		int value = p.second;
-
-		cout << key << " " << value << endl;
+		cout << *it << endl;
 	}
 
-	// 없으면 추가, 있으면 수정
-	map<int, int>::iterator findIt = m.find(10000);
-	if (findIt != m.end())
+	multiset<int>::iterator itBegin2 = ms.lower_bound(100);
+	multiset<int>::iterator itEnd2 = ms.upper_bound(100);
+
+	for (multiset<int>::iterator it = itBegin2; it != itEnd2; ++it)
 	{
-		findIt->second = 200;
-	}
-	else
-	{
-		m.insert(make_pair(10000, 200));
+		cout << *it << endl;
 	}
 
-	// 없으면 추가, 있으면 수정 v2
-	m[5] = 500; // 5라는 key가 있으면 500으로 수정, 없으면 (5, 500) 추가
-	
-	m.clear();
 
-	// [] 연산자 사용할 때 주의
-	// 대입을 하지 않더라도 (Key/Value) 형태의 데이터가 추가된다!
-	// 즉 없으면 기본값으로 세팅해줌
-	for (int i = 0; i < 10; i++)
-	{
-		cout << m[i] << endl;
-
-	}
-
-	// 넣고   (insert, [])
-	// 빼고   (erase)
-	// 찾고   (find, [])
-	// 반복자 (map::iterator) (*it) pair<key, value>&
 	return 0;
 }
