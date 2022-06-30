@@ -1,47 +1,63 @@
 ﻿#include <iostream>
 using namespace std;
+#include <vector>
 
-// 오늘의 주제 : auto
+// 오늘의 주제 : 중괄호 초기화 { }
+
 
 class Knight
 {
-public :
+public:
+	Knight()
+	{
+
+	}
+	Knight(initializer_list<int> li)
+	{
+		cout << "Knight(initializer_list)" << endl;
+	}
+public:
 	int _hp;
 };
 
 int main()
 {
-	int a = 3;
-	float b = 3.14;
-	double c = 1.23;
-	Knight d = Knight();
-	const char* e = "rookiss";
-
-	// auto는 일종의 조커카드
-	// 형식 연역 (type deduction)
-	// -> 말이 되게 잘 맞춰봐 (추론)
-	// 추룐 규칙은 생각보다 복잡해질 수 있다
-
-	auto a = 3;
-	auto b = 3.14;
-	auto c = 1.23;
-	auto d = Knight();
-	auto e = "rookiss";
-
-	auto f = &d;
-	const auto test1 = b;
+	// 중괄호 초기화 { }
+	int a = 0;
+	int b(0);
+	int c{ 0 };
 	
 
-	// 주의!
-	// 기본 auto는 const & 무시한다
-
-	int& reference = a;
-	const int cst = a;
-
-	auto test1 = reference; // int test1
-	auto test2 = cst;       // int test2
+	Knight k1;
+	Knight k2 = k1; // 복사생성자 (대입 연산자 x)
 	
-	auto& test3 = reference;
-	const auto test4 = cst;
+	Knight k3{ k1 }; // 기본 생성자
+	Knight k4;
+	k4 = k1; // 대입 연산자
+
+	int arr[] = { 1,2,3,4 };
+	vector<int> v2(10, 1);
+
+	// 중괄호 초기화
+	// 1) vector 등 container와 잘 어울린다
+	vector<int> v3{ 1, 2, 3, 4 };
+
+	// 2) 축소 변환 방지
+	int x = 0;
+	//double y{ x }; // 에러
+
+	// 3) Bonus
+	Knight k5();
+
+	Knight k6{ 1, 2,3,4,5 };
+
+
+	// 괄호 초기화 ()를 기본으로 간다
+	// - 전통적인 C++ (거부감이 없음)
+	// - vector 등 특이한 케이스에 대해서만 { } 사용
+
+	// 중괄호 초기화 { } 를 기본으로 간다
+	// - 초기화 문법의 일치화
+	// - 축소 변환 방지
 	return 0;
 }
