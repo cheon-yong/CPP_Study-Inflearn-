@@ -1,172 +1,47 @@
 ﻿#include <iostream>
 using namespace std;
-#include <vector>
-#include <list>
-#include <deque>
-#include <map>
-#include <set>
-// 오늘의 주제 : 알고리즘
-#include <algorithm>
 
-// 자료구조 (데이터를 저장하는 구조)
-// 알고리즘 (데이터를 어떻게 사용할 것인가?)
+// 오늘의 주제 : auto
 
-// find
-// find_if
-// count
-// count_if
-// all_of
-// any_of
-// none_of
-// for_each
-// remove
-// remove_if
+class Knight
+{
+public :
+	int _hp;
+};
 
 int main()
 {
-	srand(static_cast<unsigned int>(time(nullptr)));
+	int a = 3;
+	float b = 3.14;
+	double c = 1.23;
+	Knight d = Knight();
+	const char* e = "rookiss";
 
-	vector<int> v;
+	// auto는 일종의 조커카드
+	// 형식 연역 (type deduction)
+	// -> 말이 되게 잘 맞춰봐 (추론)
+	// 추룐 규칙은 생각보다 복잡해질 수 있다
 
-	for (int i = 0; i < 100; i++)
-	{
-		int num = rand() % 100;
-		v.push_back(num);
-	}
+	auto a = 3;
+	auto b = 3.14;
+	auto c = 1.23;
+	auto d = Knight();
+	auto e = "rookiss";
 
-	// Q1) number라는 숫자가 벡터에 체크하는 기능 (bool, 첫 등장 iterator)
-	{
-		int number = 50;
-		bool found = false;
-		vector<int>::iterator it;
-
-		// TODO
-		for (it = v.begin(); it != v.end(); ++it)
-		{
-			if ((*it) == number)
-			{
-				found = true;
-				break;
-			}
-		}
-
-		vector<int>::iterator itFind = find(v.begin(), v.end(), number);
-		if (itFind == v.end())
-		{
-			cout << "Q1 못찾았음" << endl;
-		}
-		else
-		{
-			cout << "Q1 찾았음" << endl;
-		}
-	}
+	auto f = &d;
+	const auto test1 = b;
 	
-	// Q2) 11로 나뉘는 숫자가 벡터에 있는지 체크하는 기능 (bool, 첫 등장 iterator)
-	{
-		bool found = false;
-		vector<int>::iterator it;
-		// TODO
-		for (it = v.begin(); it != v.end(); ++it)
-		{
-			if ((*it) % 11 == 0)
-			{
-				found = true;
-				break;
-			}
-		}
 
-		struct CanDivideBy11
-		{
-			bool operator() (int n)
-			{
-				return (n % 11) == 0;
-			}
-		};
+	// 주의!
+	// 기본 auto는 const & 무시한다
 
-		vector<int>::iterator itFind = find_if(v.begin(), v.end(), CanDivideBy11());
-		if (itFind == v.end())
-		{
-			cout << "Q2 못찾았음" << endl;
-		}
-		else
-		{
-			cout << "Q2 찾았음" << endl;
-		}
-	}
-	// Q3) 홀수인 숫자의 개수는? (count)
-	{
-		int count = 0;
-		int size = v.size();
-		for (int i = 0; i < size; i++)
-		{
-			if (v[i] % 2 == 1)
-				count++;
-		}
+	int& reference = a;
+	const int cst = a;
 
-		struct IsOdd
-		{
-			bool operator() (int n)
-			{
-				return (n % 2) != 0;
-			}
-		};
-		int n = count_if(v.begin(), v.end(), IsOdd());
-		
-		cout << "Q3 n : " << n << endl;
-
-
-		bool b1 = all_of(v.begin(), v.end(), IsOdd());
-		cout << b1 << endl;
-		bool b2 = any_of(v.begin(), v.end(), IsOdd());
-		cout << b2 << endl;
-		bool b3 = none_of(v.begin(), v.end(), IsOdd());
-		cout << b3 << endl;
-	}
-	// Q4) 벡터에 들어가 있는 모든 숫자들에 3을 곱해주세요
-	{
-		int size = v.size();
-		for (int i = 0; i < size; i++)
-		{
-			v[i] *= 3;
-		}
-
-		struct MultiplyBy3
-		{
-			void operator()(int& n)
-			{
-				n = n * 3;
-			}
-		};
-
-		for_each(v.begin(), v.end(), MultiplyBy3());
-	}
-
-	// 홀수인 데이터를 일괄 삭제
-	{
-		v.clear();
-
-		v.push_back(1);
-		v.push_back(4);
-		v.push_back(3);
-		v.push_back(5);
-		v.push_back(8);
-		v.push_back(2);
-
-		// 1 4 3 5 8 2
-
-		remove(v.begin(), v.begin(), 4);
-
-		struct IsOdd
-		{
-			bool operator() (int n)
-			{
-				return (n % 2) != 0;
-			}
-		};
-
-		vector<int>::iterator it = remove_if(v.begin(), v.begin(), IsOdd());
-		v.erase(remove_if(v.begin(), v.begin(), IsOdd()), v.end());
-		
-	}
+	auto test1 = reference; // int test1
+	auto test2 = cst;       // int test2
+	
+	auto& test3 = reference;
+	const auto test4 = cst;
 	return 0;
 }
