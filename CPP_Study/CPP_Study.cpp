@@ -5,41 +5,46 @@ using namespace std;
 #include <algorithm>
 #include <set>
 
-// 오늘의 주제 : delete (삭제된 함수)
+// 오늘의 주제 : override, final
 
-class Knight
+class Creature
 {
 public:
-
-public:
-	// 정의되지 않은 비공개(private) 함수
-	void operator=(const Knight& k) = delete;
-	
-
-	// 모든 것은 뚫는 창 vs 절대 방패
-	friend class Admin;
-
-
-private:
-	int _hp = 100;
+	virtual void Attack()
+	{
+		cout << "Creature!" << endl;
+	}
 };
 
-class Admin
+class Player : Creature
 {
 public:
-	void CopyKnight(const Knight& k)
+	virtual void Attack() override
 	{
-		Knight k1;
-		// 복사 연산
-		k1 = k;
+		cout << "Player!" << endl;
+	} 
+};
+
+class Knight : public Player
+{
+public:
+	void Attack() override // 부모클래스에서 final로 지정되면 재정의 불가
+	{
+		cout << "Knight!" << endl;
+	}
+
+	// 오버로딩(overloading) : 함수 이름의 재사용
+	virtual void Attack(int a)
+	{
+		cout << a << endl;
 	}
 };
 
 int main()
 {
-	Knight k1;
+	Player* player = new Knight();
 
-	Knight k2;
+	player->Attack();
 
 	return 0;
 }
