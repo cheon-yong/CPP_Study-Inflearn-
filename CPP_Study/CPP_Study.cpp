@@ -2,62 +2,79 @@
 using namespace std;
 #include <vector>
 
-// 오늘의 주제 : 중괄호 초기화 { }
+// 오늘의 주제 : nullptr
 
+void Test(int a)
+{
+	cout << "Test(int)" << endl;
+}
+
+void Test(void* ptr)
+{
+	cout << "Test(*)" << endl;
+}
 
 class Knight
 {
 public:
-	Knight()
+	void Test()
 	{
 
 	}
-	Knight(initializer_list<int> li)
-	{
-		cout << "Knight(initializer_list)" << endl;
-	}
-public:
-	int _hp;
 };
+
+Knight* FindKnight()
+{
+	return nullptr;
+}
+
+//NullPtr 구현
+const
+class
+{
+public:
+	// 그 어떤 타입의 포인터와도 치환 가능
+	template<typename T>
+	operator T* () const
+	{
+		return 0;
+	}
+
+	template<typename C, typename T>
+	operator T C::* () const
+	{
+		return 0;
+	}
+private:
+	void operator&() const; // 주소값 &을 막는다
+} _nullptr;
 
 int main()
 {
-	// 중괄호 초기화 { }
-	int a = 0;
-	int b(0);
-	int c{ 0 };
-	
+	int* ptr = NULL;// 0 NULL
 
-	Knight k1;
-	Knight k2 = k1; // 복사생성자 (대입 연산자 x)
-	
-	Knight k3{ k1 }; // 기본 생성자
-	Knight k4;
-	k4 = k1; // 대입 연산자
+	// 1) 오동작
+	Test(0);
+	//Test(NULL);
+	Test(_nullptr);
 
-	int arr[] = { 1,2,3,4 };
-	vector<int> v2(10, 1);
+	&_nullptr;
+	// 2) 가독성
+	Knight* knight = FindKnight();
+	if (knight == _nullptr)
+	{
 
-	// 중괄호 초기화
-	// 1) vector 등 container와 잘 어울린다
-	vector<int> v3{ 1, 2, 3, 4 };
+	}
 
-	// 2) 축소 변환 방지
-	int x = 0;
-	//double y{ x }; // 에러
+	void (Knight:: * memFunc)();
+	memFunc = &Knight::Test;
 
-	// 3) Bonus
-	Knight k5();
+	if (memFunc == _nullptr)
+	{
 
-	Knight k6{ 1, 2,3,4,5 };
+	}
 
+	auto whoami = _nullptr;
 
-	// 괄호 초기화 ()를 기본으로 간다
-	// - 전통적인 C++ (거부감이 없음)
-	// - vector 등 특이한 케이스에 대해서만 { } 사용
-
-	// 중괄호 초기화 { } 를 기본으로 간다
-	// - 초기화 문법의 일치화
-	// - 축소 변환 방지
 	return 0;
 }
