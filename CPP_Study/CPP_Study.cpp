@@ -5,49 +5,41 @@ using namespace std;
 #include <algorithm>
 #include <set>
 
-// 오늘의 주제 : enum class
+// 오늘의 주제 : delete (삭제된 함수)
 
-enum PlayerType : char
+class Knight
 {
-	None,
-	PT_Knight,
-	PT_Archer,
-	PT_Mage
+public:
+
+public:
+	// 정의되지 않은 비공개(private) 함수
+	void operator=(const Knight& k) = delete;
+	
+
+	// 모든 것은 뚫는 창 vs 절대 방패
+	friend class Admin;
+
+
+private:
+	int _hp = 100;
 };
 
-enum MonsterType
+class Admin
 {
-	// None을 쓸 수 없다!
-};
-
-enum class ObjectType
-{
-	Player,
-	Monster,
-	Projectile
+public:
+	void CopyKnight(const Knight& k)
+	{
+		Knight k1;
+		// 복사 연산
+		k1 = k;
+	}
 };
 
 int main()
 {
-	// enum class (scoped enum)
-	// 1) 이름공간 관리 (scoped)
-	// 2) 암묵적인 변환 금지
+	Knight k1;
 
-	double value = PT_Knight; // 가능
-
-	// double value2 = ObjectType::Player; // 불가능
-	double value2 = static_cast<double>(ObjectType::Player); // 억지로 가능
-
-	int choice;
-	cin >> choice;
-	// if (choice == ObjectType::Monster) // 불가능
-	if (choice == static_cast<int>(ObjectType::Monster))
-	{
-
-	}
-
-	unsigned int bitFlag;
-	bitFlag = (1 << static_cast<int>(ObjectType::Player));
+	Knight k2;
 
 	return 0;
 }
