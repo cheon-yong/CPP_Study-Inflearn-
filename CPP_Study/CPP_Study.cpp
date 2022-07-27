@@ -2,35 +2,52 @@
 using namespace std;
 #include <vector>
 #include <list>
+#include <algorithm>
+#include <set>
 
-// 오늘의 주제 : using
+// 오늘의 주제 : enum class
 
-typedef vector<int>::iterator VecIt;
+enum PlayerType : char
+{
+	None,
+	PT_Knight,
+	PT_Archer,
+	PT_Mage
+};
 
-typedef int id;
+enum MonsterType
+{
+	// None을 쓸 수 없다!
+};
 
-using id2 = int;
-
-// 1) 직관성
-typedef void (*MyFunc)();
-using MyFunc2 = void(*);
-
-
-// 2) 템플릿
-template<typename T>
-using List = std::list<T>;
-
+enum class ObjectType
+{
+	Player,
+	Monster,
+	Projectile
+};
 
 int main()
 {
-	id playerId = 0;
+	// enum class (scoped enum)
+	// 1) 이름공간 관리 (scoped)
+	// 2) 암묵적인 변환 금지
 
-	List<int> li;
-	li.push_back(10);
-	li.push_back(10);
-	li.push_back(10);
-	li.push_back(10);
-	li.push_back(10);
+	double value = PT_Knight; // 가능
+
+	// double value2 = ObjectType::Player; // 불가능
+	double value2 = static_cast<double>(ObjectType::Player); // 억지로 가능
+
+	int choice;
+	cin >> choice;
+	// if (choice == ObjectType::Monster) // 불가능
+	if (choice == static_cast<int>(ObjectType::Monster))
+	{
+
+	}
+
+	unsigned int bitFlag;
+	bitFlag = (1 << static_cast<int>(ObjectType::Player));
 
 	return 0;
 }
