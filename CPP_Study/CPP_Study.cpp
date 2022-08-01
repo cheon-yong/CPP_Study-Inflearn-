@@ -5,64 +5,148 @@ using namespace std;
 #include <algorithm>
 #include <set>
 
-// 오늘의 주제 : 전달 참조(forwarding reference)
-class Knight
+// 오늘의 주제 : 람다 (lamda)
+
+// 함수 객체를 빠르게 만드는 문법
+enum class ItemType
 {
-public:
-	Knight() { cout << "기본 생성자" << endl; }
-	Knight(const Knight&) { cout << "복사 생성자" << endl; }
-	Knight(Knight&&) noexcept { cout << "이동 생성자" << endl; }
+	None,
+	Armor,
+	Weapon,
+	Jewelry,
+	Comsumable,
 };
 
-void Test_RvalueRef(Knight&& knight) // 오른값 참조
-{ 
-
-}
-
-void Test_Copy(Knight k)
+enum class Rarity
 {
+	Common,
+	Rare,
+	Unique,
+};
 
-}
-
-template<typename T>
-void Test_ForwardingRef(T&& param)
+class Item
 {
-	// 왼값 참조라면 복사
-	//TestCopy(param)
-	// 오른값 참조라면 이동
-	//Test_Copy(std::move(param));
-	Test_Copy(std::forward<T>(param));
+public:
+	Item() { }
+	Item(int itemId, Rarity rarity, ItemType type)
+		: _itemId(itemId), _rarity(rarity), _type(type)
+	{
 
-}
+	}
+public:
+	int _itemId = 0;
+	Rarity _rarity = Rarity::Common;
+	ItemType _type = ItemType::None;
+};
 
 int main()
 {
-	// 보편 참조(universal reference)
-	// 전달 참조(forwarding reference) C++17
+	vector<Item> v;
 
-	// && &를 두 번 -> 오른값 참조
+	v.push_back(Item(1, Rarity::Common, ItemType::Weapon));
+	v.push_back(Item(2, Rarity::Common, ItemType::Armor));
+	v.push_back(Item(3, Rarity::Rare, ItemType::Jewelry));
+	v.push_back(Item(4, Rarity::Unique, ItemType::Weapon));
 
-	Knight k1;
-	Test_RvalueRef(std::move(k1));
+	// 람다 = 함수 객체를 손쉽게 만드는 문법
+	// 람다 자체로 C++11에 "새로운" 기능이 들어간 것은 아니다
+	{
+		struct IsUniqueItem
+		{
+			bool operator()(Item& item)
+			{
+				return item._rarity == Rarity::Unique;
+			}
+		};
 
-	Test_ForwardingRef(std::move(k1));
-	Test_ForwardingRef(k1);
+		// 클로저 (closure) = 람다에 의해 만들어진 실행시점 객체
+		auto isUniqueLambda = [](Item& item)
+		{
+			return item._rarity == Rarity::Unique;
+		}; // 람다 표현식(lambda expression) 
 
-	auto&& k2 = k1;
-	auto&& k3 = std::move(k1);
+		auto findIt = std::find_if(v.begin(), v.end(),
+			[](Item& item) { return item._rarity == Rarity::Unique; });
+		if (findIt != v.end())
+			cout << "아이템 ID : " << findIt->_itemId << endl;
 
-	// 공통점 : 형식 연역(type deduction)이 일어날 때
+	}
 
-	// 전달 참조를 구별하는 방법
-	// -------------------------------------
+	{
+		struct FindItem
+		{
+			FindItem(int itemId, Rarity rarity, ItemType type)
+				: _itemId(itemId), _rarity(rarity), _type(type)
+			{
 
-	Knight& k4 = k1; // 왼값 참조
-	Knight&& k5 = std::move(k1); // 오른값 참조
+			}
+			bool operator()(Item& item)
+			{
+				return item._itemId == _itemId;
+			}
 
-	// 오른값 : 왼값이 아니다 = 단일식에서 벗어나면 사용 X
-	// 오른값참조 : 오른값만 참조할 수 있는 참조 타입
-	Test_ForwardingRef(k1);
-	Test_ForwardingRef(std::move(k5));
+			int _itemId;
+			Rarity _rarity;
+			ItemType _type;
+		};
+
+		int itemId = 4;
+		Rarity rarity = Rarity::Unique;
+		ItemType type = ItemType::Weapon;
+
+		// [ ] 캡처 (capture) : 함수 객체 내부에 변수를 저장하는 개념과 유사
+		// 사진을 찰각 [캡처]하듯... 일종의 스냅샷을 찍는다고 이해
+		// 기본 캡처 모드 : 값(복사) 방식(=) 참조 방식 (&)
+		// 변수마다 캡처모드를 지정해서 사용 가능 : 값 방식(name), 참조방식 (&name)
+		auto findByItem = [=](Item& item)
+		{
+			return item._itemId == itemId && item._rarity == rarity && type == item._type;
+		};
+
+
+		auto findIt = std::find_if(v.begin(), v.end(),
+			FindItem(4, Rarity::Unique, ItemType::Weapon));
+		if (findIt != v.end())
+			cout << "아이템 ID : " << findIt->_itemId << endl;
+
+
+	}
+	{
+		class Knight
+		{
+		public:
+			auto ResetHpJob()
+			{
+				auto f = [=]()
+				{
+					_hp = 200;
+				};
+
+				return f;
+			}
+
+		public:
+			int _hp = 100;
+		};
+
+		class Functor
+		{
+		public:
+			Functor(Knight* k) : _knight(k)
+			{
+
+			}
+			void operator()()
+			{
+				_knight->_hp = 200;
+			}
+		public:
+			Knight* _knight;
+		};
+
+		Knight* k = new Knight();
+		auto job = k->ResetHpJob();
+	}
 
 	return 0;
 }
